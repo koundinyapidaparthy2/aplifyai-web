@@ -93,3 +93,13 @@ jobs:
             echo "❌ Deployment verification failed with HTTP code: $HTTP_CODE"
             exit 1
           fi
+
+      - name: Cleanup Old Artifacts
+        if: success()
+        run: |
+          chmod +x scripts/cleanup-artifacts.sh
+          ./scripts/cleanup-artifacts.sh
+        env:
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          REGION: ${{ env.REGION }}
+          KEEP_COUNT: 5
