@@ -71,7 +71,7 @@ export function securityHeaders(request: NextRequest) {
     "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https: blob:",
-    "font-src 'self' https://fonts.gstatic.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
     "connect-src 'self' https://accounts.google.com https://resume-generator-kxtqll2tna-uc.a.run.app https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com",
     "frame-src 'self' https://accounts.google.com",
     "object-src 'none'",

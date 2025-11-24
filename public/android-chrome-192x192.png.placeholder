@@ -1,0 +1,4 @@
+# Placeholder - Real PNG icons should be generated from favicon.svg
+# Use a tool like https://realfavicongenerator.net/ or imagemagick
+# convert favicon.svg -resize 192x192 android-chrome-192x192.png
+# convert favicon.svg -resize 512x512 android-chrome-512x512.png
