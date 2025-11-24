@@ -22,6 +22,7 @@
     "@capacitor/core": "^7.4.4",
     "@capacitor/ios": "^7.4.4",
     "@google/generative-ai": "^0.24.1",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
