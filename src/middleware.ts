@@ -1,10 +1,18 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+import { securityHeaders } from "@/lib/security";
+import type { NextRequest } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
+    // Apply security headers first
+    const securityResponse = securityHeaders(req as NextRequest);
+    if (securityResponse.status === 429) {
+        return securityResponse;
+    }
+
     const isLoggedIn = !!req.auth;
     const isOnDashboard = req.nextUrl.pathname.startsWith("/dashboard");
     const isOnResumes = req.nextUrl.pathname.startsWith("/resumes");
@@ -18,17 +26,26 @@ export default auth((req) => {
 
     if (protectedRoutes) {
         if (!isLoggedIn) {
-            return NextResponse.redirect(new URL("/login", req.nextUrl));
+            const response = NextResponse.redirect(new URL("/login", req.nextUrl));
+            // Copy security headers to redirect response
+            securityResponse.headers.forEach((value, key) => {
+                response.headers.set(key, value);
+            });
+            return response;
         }
-        return NextResponse.next();
+        return securityResponse;
     }
 
     // Auth routes - only redirect if truly logged in (not just session check failure)
     if (isOnAuth && isLoggedIn) {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+        const response = NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+        securityResponse.headers.forEach((value, key) => {
+            response.headers.set(key, value);
+        });
+        return response;
     }
 
-    return NextResponse.next();
+    return securityResponse;
 });
 
 export const config = {
