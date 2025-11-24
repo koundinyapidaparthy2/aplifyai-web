@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { 
   SparklesIcon, 
@@ -25,16 +25,6 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#E6F7F2] via-white to-[#FEF9E7] flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="w-16 h-16 bg-primary-500 rounded-full"></div>
-        </div>
-      </div>
-    );
-  }
-
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0 }
@@ -52,28 +42,23 @@ export default function Home() {
 
   const companies = ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Tesla', 'Uber', 'Airbnb', 'Spotify'];
 
-  // Only use scroll hooks on client side
-  const scrollHooks = mounted ? useScroll() : { scrollYProgress: null };
-  const y = scrollHooks.scrollYProgress ? useTransform(scrollHooks.scrollYProgress, [0, 1], ['0%', '50%']) : 0;
-  const y2 = scrollHooks.scrollYProgress ? useTransform(scrollHooks.scrollYProgress, [0, 1], ['0%', '30%']) : 0;
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#E6F7F2] via-white to-[#FEF9E7] flex items-center justify-center">
+        <div className="animate-pulse">
+          <div className="w-16 h-16 bg-primary-500 rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section id="home" className="relative overflow-hidden bg-gradient-to-br from-[#E6F7F2] via-white to-[#FEF9E7] pt-20 pb-32">
-        {/* Animated Background Elements */}
-        {mounted && (
-          <>
-            <motion.div 
-              style={{ y }}
-              className="absolute -top-32 -left-32 w-96 h-96 bg-primary-300 rounded-full opacity-20 blur-3xl"
-            />
-            <motion.div 
-              style={{ y: y2 }}
-              className="absolute top-1/3 -right-32 w-80 h-80 bg-secondary-300 rounded-full opacity-20 blur-3xl"
-            />
-          </>
-        )}
+        {/* Static Background Elements */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary-300 rounded-full opacity-20 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 w-80 h-80 bg-secondary-300 rounded-full opacity-20 blur-3xl" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[calc(100vh-160px)]">

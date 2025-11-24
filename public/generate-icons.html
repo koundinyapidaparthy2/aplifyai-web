@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+</head>
+<body>
+    <canvas id="canvas192" width="192" height="192"></canvas>
+    <canvas id="canvas512" width="512" height="512"></canvas>
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const center = size / 2;
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#3DCEA5');
+            gradient.addColorStop(1, '#2AB88A');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Arrow up icon (simplified)
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(center, size * 0.3);
+            ctx.lineTo(center - size * 0.15, center);
+            ctx.lineTo(center - size * 0.08, center);
+            ctx.lineTo(center - size * 0.08, size * 0.7);
+            ctx.lineTo(center + size * 0.08, size * 0.7);
+            ctx.lineTo(center + size * 0.08, center);
+            ctx.lineTo(center + size * 0.15, center);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // Generate 192x192
+        const canvas192 = document.getElementById('canvas192');
+        drawIcon(canvas192, 192);
+        canvas192.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'android-chrome-192x192.png';
+            a.click();
+        });
+        
+        // Generate 512x512
+        setTimeout(() => {
+            const canvas512 = document.getElementById('canvas512');
+            drawIcon(canvas512, 512);
+            canvas512.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'android-chrome-512x512.png';
+                a.click();
+            });
+        }, 1000);
+    </script>
+    <p>Icons will download automatically. Place them in the public folder.</p>
+</body>
+</html>
