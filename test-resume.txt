@@ -1,0 +1,69 @@
+JOHN DOE
+Software Engineer
+San Francisco, CA | john.doe@email.com | (555) 123-4567
+linkedin.com/in/johndoe | github.com/johndoe
+
+PROFESSIONAL SUMMARY
+Experienced Full-Stack Software Engineer with 5+ years of expertise in building scalable web applications using modern JavaScript frameworks. Proven track record of leading development teams and delivering high-quality software solutions. Passionate about clean code, best practices, and continuous learning.
+
+EXPERIENCE
+
+Senior Software Engineer | Tech Innovations Inc. | San Francisco, CA
+January 2020 - Present
+- Led a team of 5 developers in building a microservices-based e-commerce platform using React, Node.js, and AWS
+- Improved application performance by 40% through code optimization and caching strategies
+- Implemented CI/CD pipelines using GitHub Actions, reducing deployment time by 60%
+- Mentored junior developers and conducted code reviews to maintain code quality
+- Technologies: React, TypeScript, Node.js, Express, MongoDB, AWS, Docker, Kubernetes
+
+Software Engineer | StartupXYZ | Palo Alto, CA
+June 2018 - December 2019
+- Developed RESTful APIs and microservices using Node.js and Express
+- Built responsive web applications with React and Redux
+- Collaborated with product managers and designers to deliver user-centric features
+- Reduced API response time by 50% through database query optimization
+- Technologies: React, Node.js, PostgreSQL, Redis, Docker
+
+Junior Developer | WebDev Solutions | San Jose, CA
+July 2016 - May 2018
+- Developed and maintained client websites using HTML, CSS, JavaScript, and PHP
+- Implemented responsive designs and ensured cross-browser compatibility
+- Participated in agile development processes and daily stand-ups
+- Technologies: HTML, CSS, JavaScript, jQuery, PHP, MySQL
+
+EDUCATION
+
+Bachelor of Science in Computer Science | Stanford University | Stanford, CA
+September 2012 - June 2016
+GPA: 3.8/4.0
+Relevant Coursework: Data Structures, Algorithms, Web Development, Database Systems, Software Engineering
+
+SKILLS
+
+Programming Languages: JavaScript, TypeScript, Python, Java, SQL
+Frontend: React, Next.js, Vue.js, HTML5, CSS3, Tailwind CSS, Redux
+Backend: Node.js, Express, Django, Flask, RESTful APIs, GraphQL
+Databases: MongoDB, PostgreSQL, MySQL, Redis, Firestore
+Cloud & DevOps: AWS (EC2, S3, Lambda), Docker, Kubernetes, CI/CD, GitHub Actions
+Tools: Git, VS Code, Postman, Jira, Figma
+
+PROJECTS
+
+E-Commerce Platform | github.com/johndoe/ecommerce
+- Built a full-stack e-commerce platform with React, Node.js, and MongoDB
+- Implemented user authentication, product catalog, shopping cart, and payment integration
+- Deployed on AWS with auto-scaling and load balancing
+- Technologies: React, Node.js, Express, MongoDB, Stripe API, AWS
+
+Task Management App | github.com/johndoe/taskmanager
+- Developed a real-time task management application using React and Firebase
+- Implemented drag-and-drop functionality and real-time collaboration features
+- Technologies: React, Firebase, Material-UI
+
+CERTIFICATIONS
+
+AWS Certified Solutions Architect - Associate | Amazon Web Services | 2021
+https://aws.amazon.com/certification/
+
+MongoDB Certified Developer | MongoDB University | 2020
+https://university.mongodb.com/

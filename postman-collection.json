@@ -1,0 +1,244 @@
+{
+    "info": {
+        "name": "AmplifyAI Web API",
+        "description": "Complete API collection for AmplifyAI - Authentication, Onboarding, Profile, Resumes, Cover Letters",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "amplifyai-web-api",
+        "version": "2.0.0"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "description": "User authentication endpoints",
+            "item": [
+                {
+                    "name": "Signup",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/auth/signup",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "signup"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/auth/me",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/auth/logout",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Onboarding",
+            "description": "User onboarding endpoints",
+            "item": [
+                {
+                    "name": "Upload Resume (AI Parse)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "resume",
+                                    "type": "file",
+                                    "src": "/path/to/resume.pdf"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/onboarding/upload-resume",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "onboarding",
+                                "upload-resume"
+                            ]
+                        },
+                        "description": "Upload resume file and parse with AI (Gemini). Extracts experience, education, skills, projects, certifications."
+                    }
+                },
+                {
+                    "name": "Manual Entry",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"summary\": \"Experienced software engineer with 5+ years in full-stack development\",\n  \"location\": \"San Francisco, CA\",\n  \"experience\": [\n    {\n      \"company\": \"Tech Corp\",\n      \"title\": \"Senior Software Engineer\",\n      \"period\": \"2020-01 - Present\",\n      \"location\": \"San Francisco, CA\",\n      \"technologies\": \"React, Node.js, AWS\",\n      \"achievements\": [\"Led team of 5\", \"Increased performance by 40%\"]\n    }\n  ],\n  \"education\": [\n    {\n      \"institution\": \"Stanford University\",\n      \"degree\": \"BS Computer Science\",\n      \"period\": \"2015-09 - 2019-06\",\n      \"gpa\": \"3.8\"\n    }\n  ],\n  \"skills\": [\n    {\"category\": \"Languages\", \"items\": \"JavaScript, Python, Java\"},\n    {\"category\": \"Frameworks\", \"items\": \"React, Node.js, Django\"}\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/onboarding/manual-entry",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "onboarding",
+                                "manual-entry"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Complete Onboarding",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/onboarding/complete",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "onboarding",
+                                "complete"
+                            ]
+                        },
+                        "description": "Mark onboarding as complete"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Profile",
+            "description": "User profile management",
+            "item": [
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/profile",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"summary\": \"Updated professional summary\",\n  \"location\": \"New York, NY\",\n  \"phone\": \"+1-555-0123\",\n  \"linkedin\": \"linkedin.com/in/johndoe\",\n  \"github\": \"github.com/johndoe\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/api/profile",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "api",
+                                "profile"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "BASE_URL",
+            "value": "http://localhost:3000",
+            "type": "string"
+        }
+    ]
+}

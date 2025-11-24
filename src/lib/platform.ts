@@ -1,0 +1,8 @@
+import { Capacitor } from '@capacitor/core';
+
+export const isMobile = (): boolean => Capacitor.isNativePlatform();
+export const isIOS = (): boolean => Capacitor.getPlatform() === 'ios';
+export const isAndroid = (): boolean => Capacitor.getPlatform() === 'android';
+export const isWeb = (): boolean => !isMobile();
+
+export const getPlatform = (): string => Capacitor.getPlatform();

@@ -1,0 +1,52 @@
+resources:
+  {% for bucket in properties["buckets"] %}
+  - name: {{ bucket["name"] }}
+    type: storage.v1.bucket
+    properties:
+      name: {{ bucket["name"] }}
+      project: {{ properties["projectId"] }}
+      location: {{ bucket["location"] }}
+      storageClass: {{ bucket["storageClass"] }}
+      iamConfiguration:
+        uniformBucketLevelAccess:
+          enabled: true
+      {% if bucket.get("lifecycle") %}
+      lifecycle:
+        rule:
+          {% for rule in bucket["lifecycle"]["rules"] %}
+          - action:
+              type: {{ rule["action"]["type"] }}
+            condition:
+              age: {{ rule["condition"]["age"] }}
+          {% endfor %}
+      {% endif %}
+      cors:
+        - origin: 
+            - "https://aplifyai.com"
+            - "https://*.run.app"
+          method:
+            - GET
+            - HEAD
+            - PUT
+            - POST
+          responseHeader:
+            - "Content-Type"
+            - "Access-Control-Allow-Origin"
+          maxAgeSeconds: 3600
+
+  - name: {{ bucket["name"] }}-iam-public
+    type: gcp-types/storage-v1:virtual.buckets.iamMemberBinding
+    properties:
+      bucket: {{ bucket["name"] }}
+      role: roles/storage.objectViewer
+      member: allUsers
+    metadata:
+      dependsOn:
+        - {{ bucket["name"] }}
+  {% endfor %}
+
+outputs:
+  {% for bucket in properties["buckets"] %}
+  - name: {{ bucket["name"] }}-url
+    value: gs://{{ bucket["name"] }}
+  {% endfor %}

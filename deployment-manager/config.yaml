@@ -1,0 +1,123 @@
+# AplifyAI Complete Infrastructure Deployment
+# This deploys all services: Web App, Resume Generator, LaTeX PDF Service
+# Project: jobseek-459701
+# Custom Domain: aplifyai.com
+
+imports:
+  - path: cloud-run-web.yaml
+  - path: cloud-run-resume-generator.yaml
+  - path: cloud-run-latex-service.yaml
+  - path: storage.yaml
+  - path: networking.yaml
+
+resources:
+  # 1. Storage Buckets
+  - name: aplifyai-storage
+    type: storage.yaml
+    properties:
+      projectId: jobseek-459701
+      buckets:
+        - name: resume-generator-kp
+          location: US
+          storageClass: STANDARD
+          lifecycle:
+            rules:
+              - action:
+                  type: Delete
+                condition:
+                  age: 7
+        - name: latex-pdf-outputs-jobseek-459701
+          location: US
+          storageClass: STANDARD
+          lifecycle:
+            rules:
+              - action:
+                  type: Delete
+                condition:
+                  age: 7
+
+  # 2. Networking & Load Balancing
+  - name: aplifyai-networking
+    type: networking.yaml
+    properties:
+      projectId: jobseek-459701
+      region: us-central1
+
+  # 3. Web Application (Next.js)
+  - name: aplifyai-web
+    type: cloud-run-web.yaml
+    properties:
+      projectId: jobseek-459701
+      serviceName: aplifyai-web
+      region: us-central1
+      image: gcr.io/jobseek-459701/aplifyai-web:latest
+      memory: 1Gi
+      cpu: "1"
+      maxInstances: 10
+      minInstances: 0
+      timeout: 60s
+      domain: aplifyai.com
+      envVars:
+        NODE_ENV: production
+        NEXT_PUBLIC_APP_URL: https://aplifyai.com
+        NEXTAUTH_URL: https://aplifyai.com
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: jobseek-459701
+        GCP_PROJECT_ID: jobseek-459701
+        GCP_BUCKET_NAME: resume-generator-kp
+
+  # 4. Resume Generator Service
+  - name: resume-generator
+    type: cloud-run-resume-generator.yaml
+    properties:
+      projectId: jobseek-459701
+      serviceName: resume-generator
+      region: us-central1
+      image: gcr.io/jobseek-459701/resume-generator:latest
+      memory: 2Gi
+      cpu: "2"
+      maxInstances: 5
+      minInstances: 0
+      timeout: 300s
+      envVars:
+        NODE_ENV: production
+        PORT: "8080"
+        GCP_PROJECT_ID: jobseek-459701
+        GCP_BUCKET_NAME: resume-generator-kp
+        LATEX_PDF_SERVICE_URL: https://latex-pdf-service-DEPLOYMENT_HASH.run.app
+    metadata:
+      dependsOn:
+        - aplifyai-storage
+
+  # 5. LaTeX PDF Service
+  - name: latex-pdf-service
+    type: cloud-run-latex-service.yaml
+    properties:
+      projectId: jobseek-459701
+      serviceName: latex-pdf-service
+      region: us-central1
+      image: gcr.io/jobseek-459701/latex-pdf-service:latest
+      memory: 2Gi
+      cpu: "2"
+      maxInstances: 5
+      minInstances: 1
+      timeout: 300s
+      envVars:
+        NODE_ENV: production
+        PORT: "8080"
+        GCP_PROJECT_ID: jobseek-459701
+        GCP_BUCKET_NAME: latex-pdf-outputs-jobseek-459701
+    metadata:
+      dependsOn:
+        - aplifyai-storage
+
+outputs:
+  - name: webAppUrl
+    value: $(ref.aplifyai-web.status.url)
+  - name: resumeGeneratorUrl
+    value: $(ref.resume-generator.status.url)
+  - name: latexServiceUrl
+    value: $(ref.latex-pdf-service.status.url)
+  - name: customDomain
+    value: https://aplifyai.com
+  - name: storageBuckets
+    value: resume-generator-kp,latex-pdf-outputs-jobseek-459701

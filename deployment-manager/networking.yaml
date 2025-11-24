@@ -1,0 +1,110 @@
+resources:
+  # Global Static IP for Load Balancer (if needed for custom domain)
+  - name: aplifyai-global-ip
+    type: compute.v1.globalAddress
+    properties:
+      project: {{ properties["projectId"] }}
+      ipVersion: IPV4
+      addressType: EXTERNAL
+
+  # Network Endpoint Group for Cloud Run
+  - name: aplifyai-neg
+    type: compute.beta.regionNetworkEndpointGroup
+    properties:
+      project: {{ properties["projectId"] }}
+      region: {{ properties["region"] }}
+      networkEndpointType: SERVERLESS
+      cloudRun:
+        service: aplifyai-web
+
+  # Backend Service
+  - name: aplifyai-backend
+    type: compute.v1.backendService
+    properties:
+      project: {{ properties["projectId"] }}
+      protocol: HTTPS
+      backends:
+        - group: $(ref.aplifyai-neg.selfLink)
+      loadBalancingScheme: EXTERNAL_MANAGED
+    metadata:
+      dependsOn:
+        - aplifyai-neg
+
+  # URL Map
+  - name: aplifyai-url-map
+    type: compute.v1.urlMap
+    properties:
+      project: {{ properties["projectId"] }}
+      defaultService: $(ref.aplifyai-backend.selfLink)
+    metadata:
+      dependsOn:
+        - aplifyai-backend
+
+  # SSL Certificate (Google-managed)
+  - name: aplifyai-ssl-cert
+    type: compute.v1.sslCertificate
+    properties:
+      project: {{ properties["projectId"] }}
+      type: MANAGED
+      managed:
+        domains:
+          - aplifyai.com
+          - www.aplifyai.com
+
+  # HTTPS Proxy
+  - name: aplifyai-https-proxy
+    type: compute.v1.targetHttpsProxy
+    properties:
+      project: {{ properties["projectId"] }}
+      urlMap: $(ref.aplifyai-url-map.selfLink)
+      sslCertificates:
+        - $(ref.aplifyai-ssl-cert.selfLink)
+    metadata:
+      dependsOn:
+        - aplifyai-url-map
+        - aplifyai-ssl-cert
+
+  # Forwarding Rule
+  - name: aplifyai-forwarding-rule
+    type: compute.v1.globalForwardingRule
+    properties:
+      project: {{ properties["projectId"] }}
+      IPAddress: $(ref.aplifyai-global-ip.address)
+      IPProtocol: TCP
+      portRange: "443"
+      target: $(ref.aplifyai-https-proxy.selfLink)
+      loadBalancingScheme: EXTERNAL_MANAGED
+    metadata:
+      dependsOn:
+        - aplifyai-global-ip
+        - aplifyai-https-proxy
+
+  # HTTP to HTTPS Redirect
+  - name: aplifyai-http-proxy
+    type: compute.v1.targetHttpProxy
+    properties:
+      project: {{ properties["projectId"] }}
+      urlMap: $(ref.aplifyai-url-map.selfLink)
+    metadata:
+      dependsOn:
+        - aplifyai-url-map
+
+  - name: aplifyai-http-forwarding-rule
+    type: compute.v1.globalForwardingRule
+    properties:
+      project: {{ properties["projectId"] }}
+      IPAddress: $(ref.aplifyai-global-ip.address)
+      IPProtocol: TCP
+      portRange: "80"
+      target: $(ref.aplifyai-http-proxy.selfLink)
+      loadBalancingScheme: EXTERNAL_MANAGED
+    metadata:
+      dependsOn:
+        - aplifyai-global-ip
+        - aplifyai-http-proxy
+
+outputs:
+  - name: globalIp
+    value: $(ref.aplifyai-global-ip.address)
+  - name: sslCertStatus
+    value: $(ref.aplifyai-ssl-cert.managed.status)

@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "jobseek-459701"
+  },
+  "targets": {
+    "jobseek-459701": {
+      "hosting": {
+        "aplifyai": [
+          "jobseek-459701"
+        ]
+      }
+    }
+  }
+}

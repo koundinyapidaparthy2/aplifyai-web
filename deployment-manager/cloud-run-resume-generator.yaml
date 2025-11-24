@@ -1,0 +1,59 @@
+resources:
+  - name: {{ properties["serviceName"] }}
+    type: gcp-types/run-v1:namespaces.services
+    properties:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      metadata:
+        name: {{ properties["serviceName"] }}
+        namespace: {{ properties["projectId"] }}
+        labels:
+          cloud.googleapis.com/location: {{ properties["region"] }}
+        annotations:
+          run.googleapis.com/ingress: all
+      spec:
+        template:
+          metadata:
+            annotations:
+              autoscaling.knative.dev/maxScale: "{{ properties["maxInstances"] }}"
+              autoscaling.knative.dev/minScale: "{{ properties["minInstances"] }}"
+              run.googleapis.com/cpu-throttling: "false"
+          spec:
+            containerConcurrency: 10
+            timeoutSeconds: {{ properties["timeout"] }}
+            containers:
+              - image: {{ properties["image"] }}
+                ports:
+                  - name: http1
+                    containerPort: 8080
+                resources:
+                  limits:
+                    memory: {{ properties["memory"] }}
+                    cpu: {{ properties["cpu"] }}
+                env:
+                  {% for key, value in properties["envVars"].items() %}
+                  - name: {{ key }}
+                    value: "{{ value }}"
+                  {% endfor %}
+        traffic:
+          - percent: 100
+            latestRevision: true
+
+  - name: {{ properties["serviceName"] }}-iam
+    type: gcp-types/run-v1:projects.locations.services.setIamPolicy
+    properties:
+      location: {{ properties["region"] }}
+      project: {{ properties["projectId"] }}
+      service: {{ properties["serviceName"] }}
+      policy:
+        bindings:
+          - role: roles/run.invoker
+            members:
+              - allUsers
+    metadata:
+      dependsOn:
+        - {{ properties["serviceName"] }}
+
+outputs:
+  - name: serviceUrl
+    value: $(ref.{{ properties["serviceName"] }}.status.url)
