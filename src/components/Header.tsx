@@ -100,11 +100,11 @@ export default function Header({ user }: HeaderProps) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-2 group">
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Link href="/" className="flex items-center space-x-3 group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
                             <span className="text-white font-bold text-xl">A</span>
                         </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
+                        <span className="text-2xl font-bold text-gray-900">
                             AplifyAI
                         </span>
                     </Link>
@@ -200,15 +200,9 @@ export default function Header({ user }: HeaderProps) {
                             <>
                                 <Link
                                     href="/login"
-                                    className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+                                    className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                                 >
                                     Sign In
-                                </Link>
-                                <Link
-                                    href="/signup"
-                                    className="px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-lg hover:bg-primary-600 hover:shadow-lg hover:scale-105 transition-all"
-                                >
-                                    Get Started Free
                                 </Link>
                             </>
                         )}

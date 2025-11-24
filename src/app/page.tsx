@@ -373,83 +373,48 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-white">
+      <section id="pricing" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            className="text-center mb-16"
           >
-            <h2 className="text-5xl font-bold text-gray-900 mb-6">Simple, Transparent Pricing</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Choose the plan that works best for you. No hidden fees, cancel anytime.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="flex justify-center gap-8 max-w-5xl mx-auto flex-wrap">
             {/* Free Plan */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-primary-500 hover:shadow-medium transition-all"
+              className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all w-full max-w-sm"
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
-              <div className="mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Free</h3>
+              <div className="mb-2">
                 <span className="text-5xl font-bold text-gray-900">$0</span>
-                <span className="text-gray-600 ml-2">/month</span>
+                <span className="text-gray-500 text-base ml-1">/month</span>
               </div>
-              <p className="text-gray-600 mb-6">Perfect for getting started</p>
-              <ul className="space-y-4 mb-8">
+              <p className="text-gray-600 text-sm mb-8">Perfect for getting started</p>
+              <ul className="space-y-3 mb-8">
                 {['1 Resume', 'Basic templates', 'PDF export', 'Job search tracking'].map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <CheckCircleIcon className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                  <li key={idx} className="flex items-center gap-2">
+                    <CheckCircleIcon className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <span className="text-gray-700 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 href="/signup"
-                className="block w-full px-6 py-4 bg-gray-100 text-gray-900 font-semibold rounded-xl text-center hover:bg-gray-200 transition-all"
+                className="block w-full px-6 py-3 bg-gray-50 text-gray-900 font-medium rounded-lg text-center hover:bg-gray-100 transition-all border border-gray-200"
               >
                 Get Started
-              </Link>
-            </motion.div>
-
-            {/* Pro Plan */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl p-8 text-white relative transform scale-105 shadow-strong"
-            >
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                <span className="bg-secondary-400 text-white px-6 py-2 rounded-full text-sm font-bold shadow-medium">
-                  Most Popular
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Pro</h3>
-              <div className="mb-6">
-                <span className="text-5xl font-bold">$9.99</span>
-                <span className="text-primary-100 ml-2">/month</span>
-              </div>
-              <p className="text-primary-100 mb-6">For serious job seekers</p>
-              <ul className="space-y-4 mb-8">
-                {['Unlimited resumes', 'All premium templates', 'AI-powered optimization', 'Cover letter generator', 'Job tracker & analytics', 'Priority support'].map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <CheckCircleIcon className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/signup"
-                className="block w-full px-6 py-4 bg-white text-primary-600 font-bold rounded-xl text-center hover:bg-primary-50 transition-all"
-              >
-                Start Free Trial
               </Link>
             </motion.div>
 
@@ -459,24 +424,24 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-primary-500 hover:shadow-medium transition-all"
+              className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all w-full max-w-sm"
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-              <div className="mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Enterprise</h3>
+              <div className="mb-2">
                 <span className="text-5xl font-bold text-gray-900">Custom</span>
               </div>
-              <p className="text-gray-600 mb-6">For teams and organizations</p>
-              <ul className="space-y-4 mb-8">
+              <p className="text-gray-600 text-sm mb-8">For teams and organizations</p>
+              <ul className="space-y-3 mb-8">
                 {['Everything in Pro', 'Team collaboration', 'Custom integrations', 'Dedicated support', 'Training sessions', 'SLA guarantee'].map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <CheckCircleIcon className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                  <li key={idx} className="flex items-center gap-2">
+                    <CheckCircleIcon className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <span className="text-gray-700 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 href="#contact"
-                className="block w-full px-6 py-4 bg-gray-900 text-white font-semibold rounded-xl text-center hover:bg-gray-800 transition-all"
+                className="block w-full px-6 py-3 bg-gray-900 text-white font-medium rounded-lg text-center hover:bg-gray-800 transition-all"
               >
                 Contact Sales
               </Link>
