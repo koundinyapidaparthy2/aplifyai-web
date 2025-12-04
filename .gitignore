@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -20,12 +20,22 @@
 /playwright-report/
 
 # next.js
-/.next/
+.next/
 /out/
+apps/web/.next/
+apps/web/out/
 
 # production
 /build
-/dist
+
+# packages dist folders (built by tsup)
+packages/*/dist/
+apps/*/dist/
+
+# electron builds
+/dist/
+/dist-electron/
+apps/desktop/release/
 
 # misc
 .DS_Store
@@ -60,9 +70,6 @@ next-env.d.ts
 # prisma
 /src/generated/prisma
 
-# electron
-/dist-electron
-
 # capacitor
 /android/.gradle
 /android/build
@@ -82,3 +89,14 @@ firebase-debug.log
 # deployment
 deployment.log
 *.deployment.yaml
+
+# turbo
+.turbo/
+
+# PDF files (user uploads)
+*.pdf
+
+# lock files (optional - uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

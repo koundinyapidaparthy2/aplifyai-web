@@ -88,7 +88,9 @@ resources:
       dependsOn:
         - aplifyai-storage
 
-  # 5. LaTeX PDF Service
+  # 5. LaTeX PDF Service (Migrated from Compute Engine to Cloud Run)
+  # Previous: Compute Engine VM (latex-service-4n9c) - ~$30/month always running
+  # Now: Cloud Run with scale-to-zero - ~$0-5/month pay per use
   - name: latex-pdf-service
     type: cloud-run-latex-service.yaml
     properties:
@@ -99,7 +101,7 @@ resources:
       memory: 2Gi
       cpu: "2"
       maxInstances: 5
-      minInstances: 1
+      minInstances: 0
       timeout: 300s
       envVars:
         NODE_ENV: production

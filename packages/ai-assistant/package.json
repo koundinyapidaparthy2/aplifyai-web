@@ -1,0 +1,31 @@
+{
+  "name": "@aplifyai/ai-assistant",
+  "version": "0.1.0",
+  "description": "AI-powered job application assistant for autofill, cover letters, and resume generation",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@aplifyai/types": "*",
+    "@aplifyai/utils": "*",
+    "@aplifyai/constants": "*",
+    "@aplifyai/config": "*",
+    "@aplifyai/storage": "*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.3"
+  }
+}

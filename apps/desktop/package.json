@@ -1,0 +1,30 @@
+{
+    "name": "aplifyai-desktop",
+    "version": "1.0.0",
+    "main": "dist-electron/main.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build && electron-builder",
+        "preview": "vite preview",
+        "test:local": "playwright test",
+        "deploy": "gcloud storage cp release/*.dmg gs://aplifyai-assets-jobseek-459701/desktop/"
+    },
+    "dependencies": {
+        "@aplifyai/config": "*",
+        "@aplifyai/ui": "*",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.57.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "@vitejs/plugin-react": "^4.0.0",
+        "electron": "^28.0.0",
+        "electron-builder": "^24.0.0",
+        "typescript": "^5.0.0",
+        "vite": "^5.0.0",
+        "vite-plugin-electron": "^0.28.0",
+        "vite-plugin-electron-renderer": "^0.14.5"
+    }
+}

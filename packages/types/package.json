@@ -1,0 +1,21 @@
+{
+    "name": "@aplifyai/types",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.mts"
+        }
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5"
+    }
+}
