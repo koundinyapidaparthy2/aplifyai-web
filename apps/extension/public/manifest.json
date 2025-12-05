@@ -1,0 +1,82 @@
+{
+  "manifest_version": 3,
+  "name": "AplifyAI - AI Resume Copilot & Job Tracker",
+  "version": "1.1.0",
+  "description": "Stop wasting time. AplifyAI detects jobs, uses AI to tailor your resume & cover letter instantly, and tracks every application.",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; base-uri 'self'; frame-ancestors 'none';"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "sidePanel",
+    "contextMenus",
+    "downloads",
+    "storage",
+    "activeTab",
+    "scripting",
+    "cookies"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://localhost:4000/*",
+    "https://aplifyai.com/*",
+    "*://*.linkedin.com/*",
+    "*://*.indeed.com/*",
+    "*://*.greenhouse.io/*",
+    "*://*.lever.co/*",
+    "*://jobs.workday.com/*",
+    "*://*.workdayjobs.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/jobs/*",
+        "*://*.indeed.com/viewjob*",
+        "*://*.indeed.com/rc/clk*",
+        "*://*.greenhouse.io/*/jobs/*",
+        "*://*.lever.co/*",
+        "*://jobs.workday.com/*",
+        "*://*.workdayjobs.com/*"
+      ],
+      "js": [
+        "detectors/base-detector.js",
+        "detectors/linkedin-detector.js",
+        "detectors/indeed-detector.js",
+        "detectors/greenhouse-detector.js",
+        "detectors/lever-detector.js",
+        "detectors/workday-detector.js",
+        "autofill/FormDetector.js",
+        "autofill/FormFieldMapper.js",
+        "autofill/FormFiller.js",
+        "autofill/AutoFillManager.js",
+        "ai-answer/QuestionDetector.js",
+        "ai-answer/GeminiService.js",
+        "ai-answer/AnswerCache.js",
+        "ai-answer/AIAnswerManager.js",
+        "content-script.js"
+      ],
+      "css": [
+        "content-script.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

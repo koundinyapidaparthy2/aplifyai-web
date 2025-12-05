@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain, systemPreferences } from 'electron'
 import path from 'node:path'
 
 // The built directory structure
@@ -31,6 +31,7 @@ function createWindow() {
         win?.webContents.send('main-process-message', (new Date).toLocaleString())
     })
 
+
     if (VITE_DEV_SERVER_URL) {
         win.loadURL(VITE_DEV_SERVER_URL)
     } else {
@@ -51,4 +52,71 @@ app.on('activate', () => {
     }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+    // IPC Handlers
+    ipcMain.handle('toggle-always-on-top', (event: Electron.IpcMainInvokeEvent, flag: boolean) => {
+        if (win) {
+            win.setAlwaysOnTop(flag, 'screen-saver');
+            return win.isAlwaysOnTop();
+        }
+        return false;
+    });
+
+    ipcMain.handle('open-external', async (_event, url: string) => {
+        const { shell } = require('electron');
+        await shell.openExternal(url);
+    });
+
+    createWindow();
+
+    // Request mic permission on macOS
+    if (process.platform === 'darwin') {
+        systemPreferences.askForMediaAccess('microphone').then((access: boolean) => {
+            console.log('Microphone access:', access);
+        });
+    }
+})
+
+// Handle Deep Links
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient('aplifyai', process.execPath, [path.resolve(process.argv[1])])
+    }
+} else {
+    app.setAsDefaultProtocolClient('aplifyai')
+}
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', (_event, commandLine) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (win) {
+            if (win.isMinimized()) win.restore()
+            win.focus()
+        }
+        // Protocol handler for Windows/Linux
+        const url = commandLine.find((arg) => arg.startsWith('aplifyai://'))
+        if (url) handleDeepLink(url)
+    })
+}
+
+app.on('open-url', (event, url) => {
+    event.preventDefault()
+    handleDeepLink(url)
+})
+
+function handleDeepLink(url: string) {
+    console.log('Deep link received:', url)
+    try {
+        const urlObj = new URL(url)
+        const token = urlObj.searchParams.get('token')
+        if (token && win) {
+            win.webContents.send('auth-token', token)
+        }
+    } catch (error) {
+        console.error('Invalid deep link URL:', error)
+    }
+}

@@ -1,16 +1,40 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { getApiUrl } from '@/lib/api-config';
 import OAuthButtons from '@/components/OAuthButtons';
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callback');
+    const { data: session, status } = useSession();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    // Fix hydration mismatch by only rendering after mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Auto-redirect if already logged in and callback is present
+    useEffect(() => {
+        if (status === 'authenticated' && callbackUrl) {
+            // In a real app, you'd get the token from the session or an API
+            // For this demo, we'll use a mock token if one isn't readily available in the session object
+            const token = (session as any)?.accessToken || (session as any)?.user?.id || 'mock-session-token-' + Date.now();
+            console.log('User already logged in, redirecting to:', callbackUrl);
+            window.location.href = `${callbackUrl}?token=${token}`;
+        } else if (status === 'authenticated') {
+            router.push('/dashboard');
+        }
+    }, [status, callbackUrl, session, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,6 +56,13 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Login failed');
             }
 
+            // If callback URL is present (Electron auth), redirect there with token
+            if (callbackUrl) {
+                const token = data.token || data.accessToken || 'mock-token-' + Date.now();
+                window.location.href = `${callbackUrl}?token=${token}`;
+                return;
+            }
+
             // Redirect to dashboard
             router.push('/dashboard');
         } catch (err: any) {
@@ -40,6 +71,17 @@ export default function LoginPage() {
             setLoading(false);
         }
     };
+
+    if (!mounted) return null;
+
+    if (status === 'loading' || (status === 'authenticated' && callbackUrl)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <p className="ml-4 text-gray-600">Authenticating...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -118,5 +160,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }

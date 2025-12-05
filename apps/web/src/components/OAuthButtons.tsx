@@ -52,7 +52,7 @@ export default function OAuthButtons() {
             </button>
 
             {/* GitHub Sign In */}
-            <button
+            {/* <button
                 onClick={() => handleOAuthSignIn("github")}
                 disabled={loading !== null}
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -71,10 +71,10 @@ export default function OAuthButtons() {
                 <span className="text-gray-700 font-medium">
                     {loading === "github" ? "Signing in..." : "Continue with GitHub"}
                 </span>
-            </button>
+            </button> */}
 
             {/* Apple Sign In */}
-            <button
+            {/* <button
                 onClick={() => handleOAuthSignIn("apple")}
                 disabled={loading !== null}
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -89,7 +89,7 @@ export default function OAuthButtons() {
                 <span className="font-medium">
                     {loading === "apple" ? "Signing in..." : "Continue with Apple"}
                 </span>
-            </button>
+            </button> */}
         </div>
     );
 }

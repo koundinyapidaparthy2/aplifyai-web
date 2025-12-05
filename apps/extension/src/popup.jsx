@@ -1,0 +1,76 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import SmartPopup from './popup/SmartPopup';
+
+// Create Material-UI theme matching the extension
+const theme = createTheme({
+  typography: {
+    fontSize: 12,
+    button: {
+      textTransform: 'none',
+      fontWeight: 500,
+    },
+  },
+  components: {
+    MuiTextField: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 6,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#667eea',
+      light: '#8699f3',
+      dark: '#4a5fc7',
+    },
+    secondary: {
+      main: '#764ba2',
+      light: '#9166b8',
+      dark: '#5a3a7d',
+    },
+    success: {
+      main: '#48bb78',
+      light: '#68d391',
+      dark: '#38a169',
+      lighter: '#f0fff4',
+    },
+    warning: {
+      main: '#ed8936',
+      light: '#f6ad55',
+      dark: '#c05621',
+    },
+    error: {
+      main: '#f56565',
+      light: '#fc8181',
+      dark: '#c53030',
+    },
+  },
+});
+
+// Render the popup
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <SmartPopup />
+    </ThemeProvider>
+  </React.StrictMode>
+);

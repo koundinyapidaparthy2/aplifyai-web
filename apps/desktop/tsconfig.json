@@ -14,14 +14,36 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "module": "ESNext",
-        "moduleResolution": "Node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "paths": {
+            "@aplifyai/ui": [
+                "../../packages/ui"
+            ],
+            "@aplifyai/api": [
+                "../../packages/api"
+            ],
+            "@aplifyai/config": [
+                "../../packages/config"
+            ]
+        }
     },
     "include": [
         "src",
         "electron"
+    ],
+    "references": [
+        {
+            "path": "../../packages/api"
+        },
+        {
+            "path": "../../packages/ui"
+        },
+        {
+            "path": "../../packages/config"
+        }
     ]
 }

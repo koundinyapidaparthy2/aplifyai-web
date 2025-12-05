@@ -4,7 +4,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('ipcRenderer', {
     on(...args: Parameters<typeof ipcRenderer.on>) {
         const [channel, listener] = args
-        return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+        const subscription = (event: Electron.IpcRendererEvent, ...args: any[]) => listener(event, ...args)
+        ipcRenderer.on(channel, subscription)
+        return () => {
+            ipcRenderer.removeListener(channel, subscription)
+        }
     },
     off(...args: Parameters<typeof ipcRenderer.off>) {
         const [channel, ...omit] = args
@@ -18,4 +22,5 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
         const [channel, ...omit] = args
         return ipcRenderer.invoke(channel, ...omit)
     },
+    toggleAlwaysOnTop: (flag: boolean) => ipcRenderer.invoke('toggle-always-on-top', flag),
 })

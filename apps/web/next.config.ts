@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    output: "standalone",
+    output: "export",
     experimental: {
         // Add any experimental features here if needed
     },
