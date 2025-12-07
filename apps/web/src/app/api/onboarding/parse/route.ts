@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
         // Use Gemini 2.0 Flash (Experimental) - NO FALLBACK
         console.log('Using gemini-2.0-flash-exp...');
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" }, { apiVersion: 'v1beta' });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         // --- STAGE 1: EXTRACTION ---
         console.log('Stage 1: Analzying Resume...');
