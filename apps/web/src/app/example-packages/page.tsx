@@ -31,7 +31,7 @@ export default function ExampleUsagePage() {
 
             // Create API client
             const client = createApiClient('http://localhost:3000');
-            const response = await client.post<{ token: string }>(API_ENDPOINTS.AUTH.LOGIN, validated);
+            const response = await client.post(API_ENDPOINTS.AUTH.LOGIN, validated) as any;
 
             if (response.success && response.data) {
                 // Store token

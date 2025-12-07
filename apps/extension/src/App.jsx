@@ -7,8 +7,8 @@ import AppRoutes from './routes/routes';
 const theme = createTheme({
   palette: {
     mode: "light",
-    primary: { main: "#1565c0" },
-    secondary: { main: "#f50057" },
+    primary: { main: "#128d6b" },
+    secondary: { main: "#3dcea5" },
     background: { default: "#f4f6f8", paper: "#ffffff" },
   },
   typography: {
@@ -50,7 +50,7 @@ const theme = createTheme({
           minHeight: 0,
           padding: '4px 6px', // Reduced padding
           fontSize: '0.75rem', // Smaller font size for tabs
-          '&.Mui-selected': { color: '#1565c0', fontWeight: 500 },
+          '&.Mui-selected': { color: '#128d6b', fontWeight: 500 },
         },
         iconWrapper: {
           margin: 0,
@@ -68,9 +68,9 @@ const theme = createTheme({
           resize: "vertical",
           minHeight: 60, // Reduced min-height
           "&:focus": {
-            borderColor: "#1565c0",
+            borderColor: "#128d6b",
             outline: "none",
-            boxShadow: "0 0 0 2px rgba(21,101,192,0.3)",
+            boxShadow: "0 0 0 2px rgba(18, 141, 107, 0.3)",
           },
         },
       },

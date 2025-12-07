@@ -41,21 +41,21 @@ export default function ContactPage() {
                         <h3 className="text-lg font-medium text-gray-900 mb-6">Get in touch</h3>
                         <div className="space-y-6">
                             <div className="flex items-start">
-                                <FaEnvelope className="flex-shrink-0 w-6 h-6 text-indigo-600 mt-1" />
+                                <FaEnvelope className="flex-shrink-0 w-6 h-6 text-[#3DCEA5] mt-1" />
                                 <div className="ml-4">
                                     <p className="text-base font-medium text-gray-900">Email</p>
                                     <p className="mt-1 text-gray-500">support@aplifyai.com</p>
                                 </div>
                             </div>
                             <div className="flex items-start">
-                                <FaPhone className="flex-shrink-0 w-6 h-6 text-indigo-600 mt-1" />
+                                <FaPhone className="flex-shrink-0 w-6 h-6 text-[#3DCEA5] mt-1" />
                                 <div className="ml-4">
                                     <p className="text-base font-medium text-gray-900">Phone</p>
                                     <p className="mt-1 text-gray-500">+1 (555) 123-4567</p>
                                 </div>
                             </div>
                             <div className="flex items-start">
-                                <FaMapMarkerAlt className="flex-shrink-0 w-6 h-6 text-indigo-600 mt-1" />
+                                <FaMapMarkerAlt className="flex-shrink-0 w-6 h-6 text-[#3DCEA5] mt-1" />
                                 <div className="ml-4">
                                     <p className="text-base font-medium text-gray-900">Office</p>
                                     <p className="mt-1 text-gray-500">
@@ -85,7 +85,7 @@ export default function ContactPage() {
                                         required
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border"
+                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] sm:text-sm p-2 border"
                                     />
                                 </div>
                                 <div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                                         required
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border"
+                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] sm:text-sm p-2 border"
                                     />
                                 </div>
                             </div>
@@ -109,7 +109,7 @@ export default function ContactPage() {
                                     required
                                     value={formData.subject}
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] sm:text-sm p-2 border"
                                 />
                             </div>
 
@@ -121,7 +121,7 @@ export default function ContactPage() {
                                     required
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] sm:text-sm p-2 border"
                                 />
                             </div>
 
@@ -129,7 +129,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                    className="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#3DCEA5] hover:bg-[#34b38f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3DCEA5] disabled:opacity-50"
                                 >
                                     {loading ? 'Sending...' : 'Send Message'}
                                 </button>

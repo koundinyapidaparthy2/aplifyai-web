@@ -10,19 +10,19 @@
         "declaration": true,
         "declarationMap": true,
         "outDir": "./dist",
-        "rootDir": "./src",
         "moduleResolution": "bundler",
         "esModuleInterop": true,
         "skipLibCheck": true,
         "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "composite": true
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
-        "src/**/*"
+        "src"
     ],
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "**/*.stories.tsx",
+        "**/*.test.tsx"
     ]
 }

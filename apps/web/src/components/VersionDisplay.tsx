@@ -8,7 +8,10 @@ export default function VersionDisplay() {
     const [buildDate, setBuildDate] = useState<string>('');
     const [showDetails, setShowDetails] = useState(false);
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
+        setMounted(true);
         // Get version from package.json or environment variable
         const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0';
         const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME || new Date().toISOString();
@@ -17,6 +20,8 @@ export default function VersionDisplay() {
         setVersion(gitSha !== 'development' ? gitSha.substring(0, 7) : appVersion);
         setBuildDate(new Date(buildTime).toLocaleDateString());
     }, []);
+
+    if (!mounted) return null;
 
     return (
         <div className="fixed bottom-4 right-4 z-40">

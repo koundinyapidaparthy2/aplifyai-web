@@ -80,7 +80,9 @@ app.whenReady().then(() => {
 // Handle Deep Links
 if (process.defaultApp) {
     if (process.argv.length >= 2) {
-        app.setAsDefaultProtocolClient('aplifyai', process.execPath, [path.resolve(process.argv[1])])
+        const mainScript = path.resolve(__dirname, 'main.js');
+        console.log('Registering deep link handler (Dev):', process.execPath, mainScript);
+        app.setAsDefaultProtocolClient('aplifyai', process.execPath, [mainScript])
     }
 } else {
     app.setAsDefaultProtocolClient('aplifyai')
@@ -110,6 +112,11 @@ app.on('open-url', (event, url) => {
 
 function handleDeepLink(url: string) {
     console.log('Deep link received:', url)
+    if (win) {
+        console.log('Sending token to renderer process');
+    } else {
+        console.error('Window not found, cannot send token');
+    }
     try {
         const urlObj = new URL(url)
         const token = urlObj.searchParams.get('token')

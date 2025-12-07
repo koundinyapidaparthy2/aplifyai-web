@@ -58,12 +58,39 @@ export const authOptions = {
 
                 // Store userId in the user object for JWT
                 user.id = userId;
+                // Store onboarding status for JWT
+                if (!userQuery.empty) {
+                    const userData = userQuery.docs[0].data();
+                    user.onboardingComplete = userData.onboardingComplete;
+                } else {
+                    // New user
+                    user.onboardingComplete = false;
+                }
+
                 return true;
             } catch (error) {
                 console.error("OAuth sign in error:", error);
-                return false;
+                // Allow sign in even if DB fails, but log it. 
+                // In strict mode we might want to return false.
+                return true;
             }
         },
+        async jwt({ token, user }: any) {
+            if (user) {
+                token.userId = user.id;
+                token.email = user.email;
+                token.onboardingComplete = user.onboardingComplete;
+            }
+            return token;
+        },
+        async session({ session, token }: any) {
+            if (session.user) {
+                session.user.id = token.userId;
+                session.user.email = token.email;
+                session.user.onboardingComplete = token.onboardingComplete;
+            }
+            return session;
+        }
     },
 };
 

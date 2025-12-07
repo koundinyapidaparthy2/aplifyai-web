@@ -1,0 +1,9 @@
+.git
+.gitignore
+node_modules
+apps/web/android
+apps/web/ios
+apps/desktop/dist
+apps/desktop/dist-electron
+apps/desktop/release
+apps/extension/dist

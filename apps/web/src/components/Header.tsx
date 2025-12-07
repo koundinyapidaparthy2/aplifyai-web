@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,16 +42,16 @@ export default function Header({ user }: HeaderProps) {
     const navLinks = user ? [
         // Logged in users - show Dashboard and Pricing
         { href: '/dashboard', label: 'Dashboard' },
-        { href: '/dashboard/tracker', label: 'Job Tracker' },
-        { href: '/pricing', label: 'Pricing' },
+        { href: '/matches', label: 'Matches' },
+        { href: '/jobs', label: 'Jobs' },
+        { href: '/tracker', label: 'Job Tracker' },
+        { href: '/documents', label: 'Documents' },
     ] : [
         // Non-logged in users - show all public pages
         { href: '/', label: 'Home' },
-        { href: '/about', label: 'About Us' },
-        { href: '/services', label: 'Services' },
+        { href: '/features', label: 'Features' },
         { href: '/pricing', label: 'Pricing' },
-        { href: '/contact', label: 'Contact' },
-        { href: '/careers', label: 'Careers' },
+        { href: '/download', label: 'Download' },
     ];
 
     const isActive = (href: string) => {
@@ -67,12 +68,17 @@ export default function Header({ user }: HeaderProps) {
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    {/* Logo */}
+                    {/* Logo - SVG Replaced */}
                     <Link href="/" className="flex items-center space-x-2 group">
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <span className="text-white font-bold text-xl">A</span>
+                        <div className="relative w-8 h-8 group-hover:scale-110 transition-transform">
+                            <Image
+                                src="/favicon.svg"
+                                alt="AplifyAI Logo"
+                                fill
+                                className="object-contain"
+                            />
                         </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        <span className="text-xl font-bold text-gray-900">
                             AplifyAI
                         </span>
                     </Link>
@@ -84,13 +90,13 @@ export default function Header({ user }: HeaderProps) {
                                 key={link.href}
                                 href={link.href}
                                 className={`text-sm font-medium transition-colors relative group ${isActive(link.href)
-                                    ? 'text-indigo-600'
-                                    : 'text-gray-700 hover:text-indigo-600'
+                                    ? 'text-[#3DCEA5]'
+                                    : 'text-gray-700 hover:text-[#3DCEA5]'
                                     }`}
                             >
                                 {link.label}
                                 <span
-                                    className={`absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-600 transform origin-left transition-transform ${isActive(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                                    className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#3DCEA5] transform origin-left transition-transform ${isActive(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                                         }`}
                                 />
                             </Link>
@@ -106,7 +112,7 @@ export default function Header({ user }: HeaderProps) {
                                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
-                                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-[#3DCEA5] rounded-full flex items-center justify-center">
                                         <span className="text-white text-sm font-medium">
                                             {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
                                         </span>
@@ -167,13 +173,13 @@ export default function Header({ user }: HeaderProps) {
                             <>
                                 <Link
                                     href="/login"
-                                    className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+                                    className="text-sm font-medium text-gray-700 hover:text-[#3DCEA5] transition-colors"
                                 >
                                     Sign In
                                 </Link>
                                 <Link
                                     href="/signup"
-                                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                                    className="px-4 py-2 bg-[#3DCEA5] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:scale-105 transition-all"
                                 >
                                     Get Started Free
                                 </Link>
@@ -210,7 +216,7 @@ export default function Header({ user }: HeaderProps) {
                                     key={link.href}
                                     href={link.href}
                                     className={`block px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive(link.href)
-                                        ? 'bg-indigo-50 text-indigo-600'
+                                        ? 'bg-[#3DCEA5]/10 text-[#3DCEA5]'
                                         : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
@@ -257,7 +263,7 @@ export default function Header({ user }: HeaderProps) {
                                     </Link>
                                     <Link
                                         href="/signup"
-                                        className="block px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg text-center hover:shadow-lg transition-all"
+                                        className="block px-4 py-2 bg-[#3DCEA5] text-white text-sm font-medium rounded-lg text-center hover:shadow-lg transition-all"
                                     >
                                         Get Started Free
                                     </Link>

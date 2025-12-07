@@ -9,6 +9,7 @@ export const Login = () => {
         const callbackUrl = encodeURIComponent('aplifyai://auth');
         const webAppUrl = import.meta.env.VITE_WEB_APP_URL || 'http://localhost:3000';
         const loginUrl = `${webAppUrl}/login?callback=${callbackUrl}`;
+        console.log('Opening browser for login:', loginUrl);
 
         await (window as any).ipcRenderer.invoke('open-external', loginUrl);
     };

@@ -35,7 +35,6 @@ apps/*/dist/
 # electron builds
 /dist/
 /dist-electron/
-apps/desktop/release/
 
 # misc
 .DS_Store

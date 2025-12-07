@@ -2,14 +2,29 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function OAuthButtons() {
     const [loading, setLoading] = useState<string | null>(null);
 
+    const searchParams = useSearchParams();
+    const callback = searchParams.get("callback");
+    const source = searchParams.get("source");
+
     const handleOAuthSignIn = async (provider: string) => {
         try {
             setLoading(provider);
-            await signIn(provider, { callbackUrl: "/dashboard" });
+
+            let redirectTo = "/dashboard";
+
+            if (source === 'electron') {
+                redirectTo = `/auth/callback?source=electron`;
+            } else if (callback) {
+                // Legacy or direct callback handling
+                redirectTo = `/login?callback=${encodeURIComponent(callback)}`;
+            }
+
+            await signIn(provider, { callbackUrl: redirectTo });
         } catch (error) {
             console.error(`${provider} sign in error:`, error);
             setLoading(null);

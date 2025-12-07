@@ -24,7 +24,7 @@ export const Dashboard = () => {
                 <div className="flex items-center gap-6">
                     <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">My Copilot</h1>
                     <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-1.5 rounded-full text-sm font-medium text-gray-600 shadow-sm">
-                        <Calendar size={14} className="text-indigo-500" />
+                        <Calendar size={14} className="text-primary-500" />
                         <span>Mode: Interview Check</span>
                     </div>
                 </div>
@@ -32,7 +32,7 @@ export const Dashboard = () => {
                 <Button
                     onClick={handleStartSession}
                     variant="primary"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-indigo-200 transition-all transform hover:-translate-y-0.5 flex items-center gap-3 font-semibold text-base"
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-primary-200 transition-all transform hover:-translate-y-0.5 flex items-center gap-3 font-semibold text-base"
                 >
                     <Play size={20} fill="currentColor" />
                     Start Copilot
@@ -43,7 +43,7 @@ export const Dashboard = () => {
                 <section>
                     <div className="flex items-center justify-between mb-6">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Recent Sessions</p>
-                        <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">View all</button>
+                        <button className="text-sm font-medium text-primary-600 hover:text-primary-700">View all</button>
                     </div>
 
                     <div className="space-y-3">
@@ -51,7 +51,7 @@ export const Dashboard = () => {
                             <div key={session.id} className="group flex items-center justify-between p-5 bg-white rounded-2xl hover:bg-gray-50 transition-all border border-transparent hover:border-gray-200 hover:shadow-sm cursor-pointer">
                                 <div className="flex flex-col gap-1">
                                     <span className="text-xs font-medium text-gray-400">{session.date}</span>
-                                    <span className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{session.title}</span>
+                                    <span className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">{session.title}</span>
                                 </div>
                                 <div className="flex items-center gap-8 text-sm text-gray-500">
                                     <div className="flex items-center gap-2">

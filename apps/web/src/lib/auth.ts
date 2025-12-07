@@ -72,10 +72,26 @@ export async function removeAuthCookie() {
     cookieStore.delete(TOKEN_NAME);
 }
 
+import { auth } from "./auth-config";
+
 /**
- * Get current user from token
+ * Get current user from token or NextAuth session
  */
 export async function getCurrentUser(): Promise<JWTPayload | null> {
+    // 1. Try NextAuth Session
+    try {
+        const session = await auth();
+        if (session?.user?.email) {
+            return {
+                userId: session.user.id || 'mock-user-id',
+                email: session.user.email,
+            };
+        }
+    } catch (e) {
+        // Ignore error and try custom token
+    }
+
+    // 2. Try Custom Auth Token
     const token = await getAuthCookie();
     if (!token) return null;
 

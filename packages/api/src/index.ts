@@ -138,5 +138,3 @@ export class ApiClient {
 export const createApiClient = (baseURL: string, token?: string) => {
     return new ApiClient(baseURL, token);
 };
-
-export * from './GeminiService';

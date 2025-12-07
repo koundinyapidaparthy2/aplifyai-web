@@ -6,6 +6,7 @@ export const COLLECTIONS = {
     COVER_LETTERS: 'coverLetters',
     JOBS: 'jobs',
     CONTACT_SUBMISSIONS: 'contactSubmissions',
+    INTERVIEW_PATTERNS: 'interviewPatterns',
 } as const;
 
 // API Endpoints

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FaTwitter, FaLinkedin, FaGithub, FaDiscord } from 'react-icons/fa';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Footer() {
     const [email, setEmail] = useState('');
@@ -61,8 +62,13 @@ export default function Footer() {
                     {/* Brand Section */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center space-x-2 mb-4 group">
-                            <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="text-white font-bold text-xl">A</span>
+                            <div className="relative w-8 h-8 group-hover:scale-110 transition-transform">
+                                <Image
+                                    src="/favicon.svg"
+                                    alt="AplifyAI Logo"
+                                    fill
+                                    className="object-contain"
+                                />
                             </div>
                             <span className="text-xl font-bold text-white">
                                 AplifyAI

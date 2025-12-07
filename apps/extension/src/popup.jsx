@@ -36,14 +36,14 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#667eea',
-      light: '#8699f3',
-      dark: '#4a5fc7',
+      main: '#128d6b', // primary-600
+      light: '#3dcea5', // primary-400
+      dark: '#117158', // primary-700
     },
     secondary: {
-      main: '#764ba2',
-      light: '#9166b8',
-      dark: '#5a3a7d',
+      main: '#1eb086', // primary-500
+      light: '#6cf3c3', // primary-300
+      dark: '#115a49', // primary-800
     },
     success: {
       main: '#48bb78',

@@ -52,7 +52,9 @@ electron.app.whenReady().then(() => {
 });
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    electron.app.setAsDefaultProtocolClient("aplifyai", process.execPath, [path.resolve(process.argv[1])]);
+    const mainScript = path.resolve(__dirname, "main.js");
+    console.log("Registering deep link handler (Dev):", process.execPath, mainScript);
+    electron.app.setAsDefaultProtocolClient("aplifyai", process.execPath, [mainScript]);
   }
 } else {
   electron.app.setAsDefaultProtocolClient("aplifyai");
@@ -76,6 +78,11 @@ electron.app.on("open-url", (event, url) => {
 });
 function handleDeepLink(url) {
   console.log("Deep link received:", url);
+  if (win) {
+    console.log("Sending token to renderer process");
+  } else {
+    console.error("Window not found, cannot send token");
+  }
   try {
     const urlObj = new URL(url);
     const token = urlObj.searchParams.get("token");

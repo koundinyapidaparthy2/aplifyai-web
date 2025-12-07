@@ -53,7 +53,8 @@ gcloud run deploy ${SERVICE_NAME} \
   --timeout 60s \
   --set-env-vars "NODE_ENV=production" \
   --set-env-vars "NEXT_PUBLIC_APP_URL=https://${CUSTOM_DOMAIN}" \
-  --set-env-vars "NEXTAUTH_URL=https://${CUSTOM_DOMAIN}"
+  --set-env-vars "NEXTAUTH_URL=https://${CUSTOM_DOMAIN}" \
+  --set-env-vars "GEMINI_API_KEY=AQ.Ab8RN6Jum4vzaWGJXVQTAh6EaShCA7jJfi_cOdyodLH_oCuduw"
 
 # Step 5: Get service URL
 echo ""

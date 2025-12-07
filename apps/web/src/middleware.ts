@@ -37,7 +37,14 @@ export default auth((req) => {
     }
 
     // Auth routes - only redirect if truly logged in (not just session check failure)
+    // Auth routes - only redirect if truly logged in (not just session check failure)
     if (isOnAuth && isLoggedIn) {
+        // Don't redirect if there's a callback URL (e.g. for Electron auth)
+        const callback = req.nextUrl.searchParams.get("callback");
+        if (callback) {
+            return securityResponse;
+        }
+
         const response = NextResponse.redirect(new URL("/dashboard", req.nextUrl));
         securityResponse.headers.forEach((value, key) => {
             response.headers.set(key, value);

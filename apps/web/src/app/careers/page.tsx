@@ -6,7 +6,7 @@ export default function CareersPage() {
         <div className="bg-white min-h-screen py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-base font-semibold text-indigo-600 tracking-wide uppercase">Careers</h2>
+                    <h2 className="text-base font-semibold text-[#3DCEA5] tracking-wide uppercase">Careers</h2>
                     <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                         Join our mission
                     </p>
@@ -29,7 +29,7 @@ export default function CareersPage() {
                                             type="text"
                                             name="name"
                                             id="name"
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
+                                            className="shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
                                             placeholder="John Doe"
                                         />
                                     </div>
@@ -44,7 +44,7 @@ export default function CareersPage() {
                                             type="email"
                                             name="email"
                                             id="email"
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
+                                            className="shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
                                             placeholder="john@example.com"
                                         />
                                     </div>
@@ -59,7 +59,7 @@ export default function CareersPage() {
                                             type="url"
                                             name="linkedin"
                                             id="linkedin"
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
+                                            className="shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
                                             placeholder="https://linkedin.com/in/johndoe"
                                         />
                                     </div>
@@ -74,7 +74,7 @@ export default function CareersPage() {
                                             id="projects"
                                             name="projects"
                                             rows={3}
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
+                                            className="shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
                                             placeholder="Share links to your best work or describe projects you're proud of..."
                                         />
                                     </div>
@@ -89,7 +89,7 @@ export default function CareersPage() {
                                             id="reason"
                                             name="reason"
                                             rows={4}
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
+                                            className="shadow-sm focus:ring-[#3DCEA5] focus:border-[#3DCEA5] block w-full sm:text-sm border-gray-300 rounded-md px-4 py-3 border"
                                             placeholder="Tell us about your motivation and what you can bring to the team..."
                                         />
                                     </div>
@@ -98,7 +98,7 @@ export default function CareersPage() {
                                 <div>
                                     <button
                                         type="submit"
-                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#3DCEA5] hover:bg-[#34b38f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3DCEA5] transition-colors"
                                     >
                                         Submit Application
                                     </button>

@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import VersionDisplay from "@/components/VersionDisplay";
+import GoogleOneTap from "@/components/GoogleOneTap";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -121,10 +122,12 @@ export default function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
           <VersionDisplay />
+          <GoogleOneTap />
         </AuthProvider>
       </body>
     </html>
