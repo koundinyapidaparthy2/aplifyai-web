@@ -25,11 +25,9 @@ export async function POST(req: NextRequest) {
         const buffer = await file.arrayBuffer();
         const base64Data = Buffer.from(buffer).toString('base64');
 
-        // Initialize models
-        // Primary: Gemini 2.0 Flash (Experimental)
-        // Fallback: Gemini 1.5 Flash (Stable)
-        let model;
-        let extractionResult;
+        // Use Gemini 2.0 Flash (Experimental) - NO FALLBACK
+        console.log('Using gemini-2.0-flash-exp...');
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" }, { apiVersion: 'v1beta' });
 
         // --- STAGE 1: EXTRACTION ---
         console.log('Stage 1: Analzying Resume...');
@@ -67,21 +65,10 @@ export async function POST(req: NextRequest) {
             Do not include Markdown. Just JSON.
         `;
 
-        try {
-            console.log('Attempting with gemini-2.0-flash-exp...');
-            model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" }, { apiVersion: 'v1beta' });
-            extractionResult = await model.generateContent([
-                extractionPrompt,
-                { inlineData: { data: base64Data, mimeType: file.type } }
-            ]);
-        } catch (primaryError: any) {
-            console.warn('Gemini 2.0 Flash failed, falling back to 1.5 Flash. Error:', primaryError.message);
-            model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            extractionResult = await model.generateContent([
-                extractionPrompt,
-                { inlineData: { data: base64Data, mimeType: file.type } }
-            ]);
-        }
+        const extractionResult = await model.generateContent([
+            extractionPrompt,
+            { inlineData: { data: base64Data, mimeType: file.type } }
+        ]);
 
         if (!extractionResult || !extractionResult.response) {
             throw new Error('No response from AI model');
