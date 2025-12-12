@@ -68,6 +68,11 @@ const SmartPopup = () => {
         throw new Error(response.error || 'No job detected on this page');
       }
 
+      // Check if we actually have job data
+      if (!response.data) {
+        throw new Error('No job detected on this page');
+      }
+
       setJobData(response.data);
 
       // Check if job is already saved
@@ -88,14 +93,16 @@ const SmartPopup = () => {
         setMatchScore(score);
       }
 
-      // Get recent resumes for this company
-      const resumesResponse = await chrome.runtime.sendMessage({
-        action: 'GET_RECENT_RESUMES',
-        data: { company: response.data.company },
-      });
+      // Get recent resumes for this company (only if company exists)
+      if (response.data.company) {
+        const resumesResponse = await chrome.runtime.sendMessage({
+          action: 'GET_RECENT_RESUMES',
+          data: { company: response.data.company },
+        });
 
-      if (resumesResponse.success) {
-        setRecentResumes(resumesResponse.data || []);
+        if (resumesResponse.success) {
+          setRecentResumes(resumesResponse.data || []);
+        }
       }
 
     } catch (err) {
@@ -124,7 +131,7 @@ const SmartPopup = () => {
     if (job.skills?.length && profile.skills?.length) {
       const jobSkills = job.skills.map(s => s.toLowerCase());
       const userSkills = profile.skills.map(s => s.toLowerCase());
-      const matchingSkills = jobSkills.filter(skill => 
+      const matchingSkills = jobSkills.filter(skill =>
         userSkills.some(us => us.includes(skill) || skill.includes(us))
       );
       scores.skills = (matchingSkills.length / jobSkills.length) * 100;
@@ -136,7 +143,7 @@ const SmartPopup = () => {
     if (job.seniorityLevel && profile.totalExperience) {
       const requiredYears = extractYearsFromSeniority(job.seniorityLevel);
       const userYears = profile.totalExperience;
-      
+
       if (requiredYears) {
         scores.experience = Math.min((userYears / requiredYears) * 100, 100);
       } else {
@@ -147,7 +154,7 @@ const SmartPopup = () => {
     // Education match (15% weight)
     if (job.description && profile.education?.length) {
       const degreeKeywords = ['bachelor', 'master', 'phd', 'doctorate', 'degree'];
-      const jobRequiresDegree = degreeKeywords.some(kw => 
+      const jobRequiresDegree = degreeKeywords.some(kw =>
         job.description.toLowerCase().includes(kw)
       );
       scores.education = jobRequiresDegree && profile.education.length > 0 ? 100 : 50;
@@ -157,7 +164,7 @@ const SmartPopup = () => {
     if (job.location && profile.location) {
       const jobRemote = job.remote || job.location.toLowerCase().includes('remote');
       const userRemote = profile.remotePreference;
-      
+
       if (jobRemote && userRemote) {
         scores.location = 100;
       } else if (job.location.toLowerCase().includes(profile.location?.toLowerCase())) {
@@ -278,7 +285,7 @@ const SmartPopup = () => {
   const handleEditSave = (editedData) => {
     setJobData(editedData);
     setEditDialogOpen(false);
-    
+
     // Recalculate match score
     if (userProfile) {
       const score = calculateMatchScore(editedData, userProfile);
@@ -337,7 +344,7 @@ const SmartPopup = () => {
   }
 
   return (
-    <Box sx={{ width: 400, maxHeight: 600, overflow: 'auto' }}>
+    <Box sx={{ width: '100%', height: '100%', overflow: 'auto', bgcolor: 'background.default' }}>
       {/* Header with Match Score */}
       <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start">

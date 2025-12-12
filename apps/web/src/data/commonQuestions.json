@@ -1,0 +1,424 @@
+{
+    "USA": {
+        "workAuthorization": [
+            {
+                "question": "Are you legally authorized to work in the United States?",
+                "type": "boolean",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "question": "Will you now or in the future require sponsorship for employment visa status?",
+                "type": "boolean",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "question": "Select your current U.S. work authorization status",
+                "type": "select",
+                "options": [
+                    "U.S. Citizen",
+                    "Green Card Holder (Permanent Resident)",
+                    "F-1 Student Visa",
+                    "OPT",
+                    "STEM OPT",
+                    "H1B",
+                    "H1B Transfer Eligible",
+                    "H4 EAD",
+                    "L2 EAD",
+                    "TN (Mexico/Canada)",
+                    "E3 (Australia)",
+                    "O1 Visa",
+                    "J1 Visa",
+                    "TPS",
+                    "Asylee / Refugee",
+                    "Other Valid EAD",
+                    "Other"
+                ]
+            },
+            {
+                "question": "If on OPT, provide OPT Start Date",
+                "type": "date"
+            },
+            {
+                "question": "If on OPT, provide OPT End Date",
+                "type": "date"
+            },
+            {
+                "question": "If on STEM OPT, provide STEM OPT End Date",
+                "type": "date"
+            },
+            {
+                "question": "Are you at least 18 years of age?",
+                "type": "boolean",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            }
+        ],
+        "studentSpecific": [
+            {
+                "question": "Are you currently a student?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you eligible for CPT?",
+                "type": "boolean",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "question": "Do you require CPT for this internship?",
+                "type": "boolean",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "question": "Graduation Date",
+                "type": "date"
+            }
+        ],
+        "employmentPreferences": [
+            {
+                "question": "What is your earliest available start date?",
+                "type": "date"
+            },
+            {
+                "question": "Are you open to relocation?",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No",
+                    "Maybe"
+                ]
+            },
+            {
+                "question": "Preferred work setting",
+                "type": "select",
+                "options": [
+                    "Remote",
+                    "Hybrid",
+                    "Onsite",
+                    "No Preference"
+                ]
+            },
+            {
+                "question": "Desired Salary Range (Annual USD)",
+                "type": "text"
+            },
+            {
+                "question": "Are you interested in contract roles?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you willing to travel if required?",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No",
+                    "Up to 25%",
+                    "Up to 50%",
+                    "Up to 75%",
+                    "100% Travel"
+                ]
+            }
+        ],
+        "compliance": [
+            {
+                "question": "Are you willing to undergo a background check?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you willing to undergo a drug screening?",
+                "type": "boolean"
+            },
+            {
+                "question": "Have you ever been convicted of a felony?",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Do you have any non-compete obligations?",
+                "type": "boolean"
+            }
+        ],
+        "eeo": [
+            {
+                "question": "Gender Identity",
+                "type": "select",
+                "options": [
+                    "Male",
+                    "Female",
+                    "Non-binary",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Race/Ethnicity",
+                "type": "select",
+                "options": [
+                    "Hispanic or Latino",
+                    "White",
+                    "Black or African American",
+                    "Asian",
+                    "Native Hawaiian or Pacific Islander",
+                    "American Indian or Alaska Native",
+                    "Two or More Races",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Veteran Status",
+                "type": "select",
+                "options": [
+                    "I am not a protected veteran",
+                    "I am a protected veteran",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Disability Status",
+                "type": "select",
+                "options": [
+                    "Yes, I have a disability",
+                    "No, I do not have a disability",
+                    "Prefer not to say"
+                ]
+            }
+        ]
+    },
+    "Canada": {
+        "workAuthorization": [
+            {
+                "question": "Are you legally eligible to work in Canada?",
+                "type": "boolean"
+            },
+            {
+                "question": "Select your current Canadian work authorization status",
+                "type": "select",
+                "options": [
+                    "Canadian Citizen",
+                    "Permanent Resident",
+                    "Open Work Permit",
+                    "Closed Work Permit",
+                    "PGWP (Post-Graduation Work Permit)",
+                    "Co-op Work Permit",
+                    "Study Permit with Work Authorization",
+                    "Visitor Visa (Not Eligible)",
+                    "Other"
+                ]
+            },
+            {
+                "question": "Work Permit Expiry Date",
+                "type": "date"
+            }
+        ],
+        "studentSpecific": [
+            {
+                "question": "Are you currently a student in Canada?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you eligible for Co-op work?",
+                "type": "boolean"
+            },
+            {
+                "question": "Graduation Date",
+                "type": "date"
+            }
+        ],
+        "employmentPreferences": [
+            {
+                "question": "Preferred work setting",
+                "type": "select",
+                "options": [
+                    "Remote",
+                    "Hybrid",
+                    "Onsite"
+                ]
+            },
+            {
+                "question": "Desired Salary Range (CAD)",
+                "type": "text"
+            },
+            {
+                "question": "Are you open to relocation?",
+                "type": "boolean"
+            }
+        ],
+        "compliance": [
+            {
+                "question": "Are you willing to undergo a criminal background check?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you willing to undergo a security clearance (if required)?",
+                "type": "boolean"
+            }
+        ],
+        "diversity": [
+            {
+                "question": "Gender",
+                "type": "select",
+                "options": [
+                    "Male",
+                    "Female",
+                    "Non-binary",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Ethnic Group",
+                "type": "select",
+                "options": [
+                    "Indigenous",
+                    "White",
+                    "Black",
+                    "South Asian",
+                    "East Asian",
+                    "Middle Eastern",
+                    "Latin American",
+                    "Mixed",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Do you identify as a person with disabilities?",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No",
+                    "Prefer not to say"
+                ]
+            }
+        ]
+    },
+    "UK": {
+        "workAuthorization": [
+            {
+                "question": "Are you legally allowed to work in the United Kingdom?",
+                "type": "boolean"
+            },
+            {
+                "question": "Select your current UK right-to-work status",
+                "type": "select",
+                "options": [
+                    "UK Citizen",
+                    "Irish Citizen",
+                    "Skilled Worker Visa",
+                    "Graduate Route Visa",
+                    "Student Visa (Tier 4)",
+                    "Health and Care Worker Visa",
+                    "Family Visa",
+                    "Indefinite Leave to Remain (ILR)",
+                    "EU Settlement Scheme Pre-Settled",
+                    "EU Settlement Scheme Settled",
+                    "Other"
+                ]
+            },
+            {
+                "question": "Visa Expiry Date",
+                "type": "date"
+            },
+            {
+                "question": "Do you require sponsorship now or in the future?",
+                "type": "boolean"
+            }
+        ],
+        "studentSpecific": [
+            {
+                "question": "Are you currently studying in the UK?",
+                "type": "boolean"
+            },
+            {
+                "question": "Do you have term-time work restrictions?",
+                "type": "boolean"
+            },
+            {
+                "question": "Graduation Date",
+                "type": "date"
+            }
+        ],
+        "employmentPreferences": [
+            {
+                "question": "Preferred work setting",
+                "type": "select",
+                "options": [
+                    "Remote",
+                    "Hybrid",
+                    "Onsite"
+                ]
+            },
+            {
+                "question": "Salary Expectations (GBP)",
+                "type": "text"
+            }
+        ],
+        "compliance": [
+            {
+                "question": "Are you willing to complete Right-to-Work verification?",
+                "type": "boolean"
+            },
+            {
+                "question": "Are you willing to undergo a DBS background check?",
+                "type": "boolean"
+            }
+        ],
+        "diversity": [
+            {
+                "question": "Gender Identity",
+                "type": "select",
+                "options": [
+                    "Male",
+                    "Female",
+                    "Non-binary",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Ethnic Background",
+                "type": "select",
+                "options": [
+                    "White",
+                    "Mixed or Multiple Ethnic Groups",
+                    "Asian or Asian British",
+                    "Black, African or Caribbean",
+                    "Other Ethnic Group",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Disability Status",
+                "type": "select",
+                "options": [
+                    "Yes, I have a disability",
+                    "No, I do not have a disability",
+                    "Prefer not to say"
+                ]
+            },
+            {
+                "question": "Armed Forces Status",
+                "type": "select",
+                "options": [
+                    "I have served",
+                    "I am a family member",
+                    "No",
+                    "Prefer not to say"
+                ]
+            }
+        ]
+    }
+}

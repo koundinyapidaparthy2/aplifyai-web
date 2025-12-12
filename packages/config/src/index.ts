@@ -13,22 +13,22 @@ export function detectPlatform(): Platform {
   if (typeof window === 'undefined') {
     return 'web'; // Server-side rendering
   }
-  
+
   // Check for Electron
   if (typeof window !== 'undefined' && (window as any).electronAPI) {
     return 'electron';
   }
-  
+
   // Check for Capacitor
   if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform?.()) {
     return 'capacitor';
   }
-  
+
   // Check for Chrome Extension
   if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
     return 'extension';
   }
-  
+
   return 'web';
 }
 
@@ -50,7 +50,7 @@ export interface AIConfigOptions {
 }
 
 const DEFAULT_AI_CONFIG: Omit<AIConfig, 'apiKey'> = {
-  model: 'gemini-1.5-flash',
+  model: 'gemini-2.5-flash',
   maxTokens: 8192,
   temperature: 0.7,
 };
@@ -62,7 +62,7 @@ const DEFAULT_AI_CONFIG: Omit<AIConfig, 'apiKey'> = {
 export async function getAIConfig(options?: AIConfigOptions): Promise<AIConfig> {
   const platform = detectPlatform();
   let apiKey = '';
-  
+
   switch (platform) {
     case 'extension':
       // Chrome extension stores key in chrome.storage
@@ -71,7 +71,7 @@ export async function getAIConfig(options?: AIConfigOptions): Promise<AIConfig> 
         apiKey = result.geminiApiKey || '';
       }
       break;
-      
+
     case 'electron':
       // Electron can use environment variables or secure storage
       apiKey = process.env.GEMINI_API_KEY || '';
@@ -84,7 +84,7 @@ export async function getAIConfig(options?: AIConfigOptions): Promise<AIConfig> 
         }
       }
       break;
-      
+
     case 'capacitor':
       // Capacitor can use secure storage or preferences
       if (typeof window !== 'undefined' && (window as any).Capacitor?.Plugins?.Preferences) {
@@ -99,14 +99,14 @@ export async function getAIConfig(options?: AIConfigOptions): Promise<AIConfig> 
         apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
       }
       break;
-      
+
     case 'web':
     default:
       // Web uses environment variables
       apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
       break;
   }
-  
+
   return {
     apiKey,
     model: options?.model || DEFAULT_AI_CONFIG.model,
@@ -120,26 +120,26 @@ export async function getAIConfig(options?: AIConfigOptions): Promise<AIConfig> 
  */
 export async function setAIApiKey(apiKey: string): Promise<void> {
   const platform = detectPlatform();
-  
+
   switch (platform) {
     case 'extension':
       if (typeof chrome !== 'undefined' && chrome.storage?.local) {
         await chrome.storage.local.set({ geminiApiKey: apiKey });
       }
       break;
-      
+
     case 'electron':
       if (typeof window !== 'undefined' && (window as any).electronAPI?.setSecureValue) {
         await (window as any).electronAPI.setSecureValue('geminiApiKey', apiKey);
       }
       break;
-      
+
     case 'capacitor':
       if (typeof window !== 'undefined' && (window as any).Capacitor?.Plugins?.Preferences) {
         await (window as any).Capacitor.Plugins.Preferences.set({ key: 'geminiApiKey', value: apiKey });
       }
       break;
-      
+
     default:
       console.warn('Cannot set API key on web platform. Use environment variables instead.');
       break;
@@ -184,12 +184,12 @@ export interface APIConfig {
 
 export function getAPIConfig(): APIConfig {
   const platform = detectPlatform();
-  
+
   // For native platforms, we need absolute URLs
   const isNative = platform === 'electron' || platform === 'capacitor';
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ||
     (isNative ? 'https://api.aplify.ai' : '');
-  
+
   return {
     baseUrl,
     resumeGeneratorUrl: process.env.RESUME_GENERATOR_URL || 'http://localhost:3000',
@@ -210,7 +210,7 @@ export interface AuthConfig {
 
 export function getAuthConfig(): AuthConfig {
   const isProduction = process.env.NODE_ENV === 'production';
-  
+
   return {
     jwtSecret: process.env.JWT_SECRET || 'development-secret-change-in-production',
     tokenExpiry: '7d',
@@ -287,7 +287,7 @@ export interface AppConfig {
 
 export function getAppConfig(): AppConfig {
   const env = process.env.NODE_ENV || 'development';
-  
+
   return {
     name: 'Aplify AI',
     version: '1.0.0',

@@ -213,6 +213,18 @@ class AplifyAIContentScript {
       return;
     }
 
+    // Wait 4 seconds before showing the button
+    console.log('[JobSeek] Waiting 4 seconds before showing button...');
+    setTimeout(() => {
+      this.createFloatingButton();
+    }, 4000);
+  }
+
+  /**
+   * Create the actual floating button element
+   */
+  createFloatingButton() {
+
     // Create FAB container
     const container = document.createElement('div');
     container.className = 'jobseek-fab-container animate-in';
@@ -248,6 +260,9 @@ class AplifyAIContentScript {
           <button class="jobseek-mini-card-btn jobseek-mini-card-btn-secondary" data-action="save">
             Save Job
           </button>
+          <button class="jobseek-mini-card-btn" data-action="go" style="background: #eab308; color: white;">
+            GO (Extract)
+          </button>
         </div>
       </div>
     `;
@@ -258,6 +273,7 @@ class AplifyAIContentScript {
     const closeBtn = container.querySelector('.jobseek-mini-card-close');
     const generateBtn = container.querySelector('[data-action="generate"]');
     const saveBtn = container.querySelector('[data-action="save"]');
+    const goBtn = container.querySelector('[data-action="go"]');
 
     // FAB click - toggle card
     fab.addEventListener('click', (e) => {
@@ -281,6 +297,11 @@ class AplifyAIContentScript {
       this.handleSaveJob();
     });
 
+    // GO button
+    goBtn.addEventListener('click', () => {
+      this.handleExtraction();
+    });
+
     // Close card when clicking outside
     document.addEventListener('click', (e) => {
       if (!container.contains(e.target)) {
@@ -294,6 +315,22 @@ class AplifyAIContentScript {
     this.fabElement = fab;
     this.cardElement = card;
 
+    // Watch for external removal
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.removedNodes) {
+          if (node === container || node.contains(container)) {
+            console.warn('[JobSeek] Button was removed from DOM by external code!');
+            console.trace('[JobSeek] Removal stack trace');
+            observer.disconnect();
+            this.fabElement = null;
+            this.cardElement = null;
+          }
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     console.log('[JobSeek] Floating button shown');
   }
 
@@ -301,6 +338,8 @@ class AplifyAIContentScript {
    * Hide floating action button
    */
   hideFloatingButton() {
+    console.log('[JobSeek] hideFloatingButton() called');
+    console.trace('[JobSeek] Hide button stack trace');
     const container = document.querySelector('.jobseek-fab-container');
     if (container) {
       container.style.animation = 'jobseek-slide-out 0.3s ease forwards';
@@ -938,7 +977,141 @@ class AplifyAIContentScript {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   }
+
+  /**
+   * Handle extraction action (Step A)
+   */
+  async handleExtraction() {
+    console.log('[JobSeek] Starting extraction...');
+
+    this.showNotification('Scrolling to capture all fields...', 'success');
+    const startScroll = window.scrollY;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    let detector;
+    if (this.aiAnswerManager && this.aiAnswerManager.detector) {
+      detector = this.aiAnswerManager.detector;
+    } else {
+      if (typeof QuestionDetector !== 'undefined') {
+        detector = new QuestionDetector();
+      } else {
+        console.error('[JobSeek] QuestionDetector not found');
+        this.showNotification('Error: Logic not loaded', 'error');
+        return;
+      }
+    }
+
+    try {
+      const fields = detector.detect();
+
+      // Find submit button
+      const submitButton = document.querySelector('button[type="submit"], input[type="submit"], button[aria-label*="ubmit" i], button:not([type="button"]):not([type="reset"])');
+      const submitButtonInfo = submitButton ? {
+        text: submitButton.textContent?.trim() || submitButton.value,
+        id: submitButton.id,
+        type: submitButton.type,
+        ariaLabel: submitButton.getAttribute('aria-label')
+      } : null;
+
+      // Extract job metadata
+      const jobMetadata = {
+        url: window.location.href,
+        title: document.title,
+        company: this.currentJob?.company || this.extractCompanyFromUrl(),
+        jobTitle: this.currentJob?.jobTitle || document.querySelector('h1')?.textContent?.trim(),
+        location: this.currentJob?.location || null,
+        jobType: this.extractJobType()
+      };
+
+      // Compile full extraction data
+      const extractionData = {
+        timestamp: new Date().toISOString(),
+        metadata: jobMetadata,
+        fields: fields.map(f => ({
+          id: f.id,
+          name: f.name,
+          label: f.text,
+          type: f.type,
+          inputType: f.inputType,
+          placeholder: f.placeholder,
+          value: f.value,
+          required: f.required,
+          options: f.options || null
+        })),
+        submitButton: submitButtonInfo,
+        totalFields: fields.length
+      };
+
+      // Single comprehensive console output
+      console.log('%c[JobSeek] Complete Extraction', 'background: #4CAF50; color: white; font-weight: bold; padding: 4px 8px; border-radius: 3px;');
+      console.table({
+        'URL': extractionData.metadata.url,
+        'Company': extractionData.metadata.company,
+        'Job Title': extractionData.metadata.jobTitle,
+        'Location': extractionData.metadata.location,
+        'Job Type': extractionData.metadata.jobType,
+        'Total Fields': extractionData.totalFields,
+        'Submit Button': extractionData.submitButton?.text || 'Not found'
+      });
+      console.log('📋 Complete Data:', extractionData);
+
+      // Restore scroll position
+      window.scrollTo({
+        top: startScroll,
+        behavior: 'auto'
+      });
+
+      this.showNotification(`Extracted ${fields.length} fields! Check Console.`, 'success');
+
+    } catch (e) {
+      console.error('[JobSeek] Extraction failed:', e);
+      this.showNotification('Extraction failed', 'error');
+    }
+  }
+
+  /**
+   * Extract company name from URL
+   */
+  extractCompanyFromUrl() {
+    const url = window.location.href;
+
+    // Greenhouse pattern: job-boards.greenhouse.io/company/jobs/id
+    if (url.includes('greenhouse.io')) {
+      const match = url.match(/greenhouse\.io\/([^\/]+)/);
+      return match ? match[1] : null;
+    }
+
+    // Lever pattern: jobs.lever.co/company/
+    if (url.includes('lever.co')) {
+      const match = url.match(/lever\.co\/([^\/]+)/);
+      return match ? match[1] : null;
+    }
+
+    // LinkedIn pattern: linkedin.com/jobs/view/id?company=name
+    if (url.includes('linkedin.com')) {
+      const match = url.match(/[?&]company=([^&]+)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Extract job type from page content
+   */
+  extractJobType() {
+    const pageText = document.body.textContent.toLowerCase();
+
+    if (pageText.includes('full time') || pageText.includes('full-time')) return 'Full-time';
+    if (pageText.includes('part time') || pageText.includes('part-time')) return 'Part-time';
+    if (pageText.includes('contract')) return 'Contract';
+    if (pageText.includes('internship')) return 'Internship';
+    if (pageText.includes('remote')) return 'Remote';
+
+    return 'Not specified';
+  }
 }
 
 // Start the content script when loaded
-const jobSeekCS = new JobSeekContentScript();
+const jobSeekCS = new AplifyAIContentScript();

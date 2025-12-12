@@ -265,7 +265,7 @@ async function handleJobDetected(jobData, tab) {
     await chrome.storage.local.set({ [STORAGE_KEYS.DETECTED_JOBS]: jobs });
 
     // Update badge
-    chrome.action.setBadge({
+    chrome.action.setBadgeText({
       text: jobs.length.toString(),
       tabId: tab?.id
     });
@@ -281,15 +281,21 @@ async function handleJobDetected(jobData, tab) {
       await handleSaveJob(jobData);
     }
 
-    // Check backend for existing context/model
-    const contextResult = await handleCheckJobContext(jobData);
-    // If processed, we could notify the user or update the UI state
-    // For now, we just return the result so the content script knows
+    // Check backend for existing context/model (don't fail if this errors)
+    let contextResult = null;
+    try {
+      contextResult = await handleCheckJobContext(jobData);
+    } catch (err) {
+      console.warn('[AplifyAI Background] Context check failed, continuing anyway:', err);
+    }
+
+    // Always return success so content script can show the button
     return { success: true, jobId: jobData.id, context: contextResult };
 
   } catch (error) {
     console.error('[AplifyAI Background] Error handling job detection:', error);
-    throw error;
+    // Still return success so the UI doesn't break
+    return { success: false, error: error.message };
   }
 }
 

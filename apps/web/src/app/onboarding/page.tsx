@@ -3,10 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import {
-    FiUploadCloud, FiUser, FiMapPin, FiGlobe, FiCpu,
-    FiCheckCircle, FiLoader, FiEdit3, FiAward, FiZap, FiActivity, FiCode
-} from 'react-icons/fi';
+import { FiUploadCloud, FiCheckCircle, FiUser, FiZap, FiGlobe, FiCode, FiEdit3 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@aplifyai/ui';
 
@@ -53,6 +50,13 @@ export default function OnboardingPage() {
         }
     };
 
+    // Dynamic Questions State
+    const [selectedCountry, setSelectedCountry] = useState<'USA' | 'Canada' | 'UK'>('USA');
+    const [complianceAnswers, setComplianceAnswers] = useState<Record<string, any>>({});
+
+    // Import questions
+    const commonQuestions = require('../../data/commonQuestions.json');
+
     const handleUpload = async (uploadedFile: File) => {
         setStatus('scanning');
 
@@ -81,8 +85,78 @@ export default function OnboardingPage() {
 
             // Artificial delay to show off the "100%" state and transition smoother
             setTimeout(() => {
-                setParsedData(data?.parsedData || {});
+                const parsed = data?.parsedData || {};
+                setParsedData(parsed);
                 setQuestions(data?.dynamicQuestions || []);
+
+                // Pre-fill logic based on inferred data
+                const inferredAnswers: Record<string, any> = {};
+
+                // Map parsed country to supported country keys
+                const parsedCountryRaw = parsed.country || '';
+                let targetCountry: 'USA' | 'Canada' | 'UK' = 'USA';
+                if (/canada/i.test(parsedCountryRaw)) targetCountry = 'Canada';
+                else if (/united kingdom|uk|britain/i.test(parsedCountryRaw)) targetCountry = 'UK';
+
+                setSelectedCountry(targetCountry);
+
+                if (parsed.compliance) {
+                    const countryQuestions = commonQuestions[targetCountry];
+
+                    // Helper to normalize strings for comparison
+                    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                    // Iterate sections (workAuthorization, studentSpecific, etc)
+                    Object.keys(countryQuestions).forEach(sectionKey => {
+                        countryQuestions[sectionKey].forEach((q: any, qIdx: number) => {
+                            const questionId = `${targetCountry}-${sectionKey}-${qIdx}`;
+
+                            // Strategy: Check if we have a direct mapping in parsed.compliance based on keywords
+                            // This is heuristic-based.
+                            let parsedValue: any = null;
+
+                            // 1. Work Authorization & Visa
+                            if (sectionKey === 'workAuthorization') {
+                                if (q.question.includes('legally authorized')) parsedValue = parsed.compliance.workAuthorization ? 'Yes' : 'No';
+                                if (q.question.includes('require sponsorship')) parsedValue = parsed.compliance.requiresSponsorship ? 'Yes' : 'No';
+                                if (q.question.includes('current') && q.question.includes('status')) parsedValue = parsed.compliance.workAuthorization;
+                            }
+
+                            // 2. Student
+                            if (sectionKey === 'studentSpecific') {
+                                if (q.question.includes('currently a student')) parsedValue = parsed.compliance.isStudent ? 'Yes' : 'No';
+                            }
+
+                            // 3. Demographics (Diversity)
+                            if (sectionKey === 'diversity' || sectionKey === 'eeo') {
+                                if (q.question.includes('Gender')) parsedValue = parsed.compliance.gender;
+                                if (q.question.includes('Veteran')) parsedValue = parsed.compliance.isVeteran ? 'I am a protected veteran' : 'I am not a protected veteran';
+                                if (q.question.includes('Disability')) parsedValue = parsed.compliance.disability;
+                            }
+
+                            // Apply the value if found
+                            if (parsedValue !== null && parsedValue !== undefined) {
+                                if (q.type === 'boolean') {
+                                    // Ensure Yes/No format
+                                    if (parsedValue === true) inferredAnswers[questionId] = 'Yes';
+                                    else if (parsedValue === false) inferredAnswers[questionId] = 'No';
+                                    else inferredAnswers[questionId] = parsedValue; // Already string 'Yes'/'No'
+                                } else if (q.type === 'select' && q.options) {
+                                    // Fuzzy match against options
+                                    const bestMatch = q.options.find((opt: string) =>
+                                        normalize(opt).includes(normalize(parsedValue)) ||
+                                        normalize(parsedValue).includes(normalize(opt))
+                                    );
+                                    if (bestMatch) inferredAnswers[questionId] = bestMatch;
+                                } else {
+                                    inferredAnswers[questionId] = parsedValue;
+                                }
+                            }
+                        });
+                    });
+                }
+                setComplianceAnswers(inferredAnswers);
+
                 setStatus('analyzing');
 
                 // Allow time for "analyzing" animations to play before showing complete dashboard
@@ -104,6 +178,7 @@ export default function OnboardingPage() {
                 body: JSON.stringify({
                     ...parsedData,
                     dynamicQuestions: questions,
+                    complianceAnswers: complianceAnswers // Send all answers, backend can filter by country if needed
                 }),
             });
 
@@ -237,102 +312,46 @@ export default function OnboardingPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-12 gap-6 auto-rows-min">
+                                {questions && questions.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.4, delay: 0.2 }}
+                                        className="col-span-12 bg-white rounded-3xl border border-slate-100 shadow-sm p-8"
+                                    >
+                                        <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <FiZap className="text-[#3DCEA5]" /> Recommended Interview Answers
+                                        </h3>
 
-                                {/* 1. ID CARD (Small) */}
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.4 }}
-                                    className="col-span-12 md:col-span-4 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative overflow-hidden"
-                                >
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-16 h-16 rounded-2xl bg-[#3DCEA5]/10 flex items-center justify-center text-2xl font-bold text-[#3DCEA5]">
-                                            {parsedData?.firstName?.[0]}
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-slate-900">{parsedData?.firstName} {parsedData?.lastName}</h3>
-                                            <p className="text-sm text-slate-500">{parsedData?.jobTitle || 'Candidate'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3 mt-6">
-                                        <div className="flex items-center gap-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
-                                            <FiGlobe className="text-[#3DCEA5]" />
-                                            {parsedData?.location || 'Location not found'}
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
-                                            <FiCode className="text-slate-400" />
-                                            {parsedData?.skills?.[0] || 'Skills'} • {parsedData?.skills?.[1]}
-                                        </div>
-                                    </div>
-                                </motion.div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            {questions.map((q, idx) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: 0.3 + (idx * 0.1) }}
+                                                    className="bg-slate-50 rounded-2xl p-5 border border-slate-100 hover:border-[#3DCEA5]/50 transition-colors group"
+                                                >
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <span className="text-xs font-bold text-[#3DCEA5] bg-[#3DCEA5]/10 px-2 py-1 rounded">Q{idx + 1}</span>
+                                                    </div>
+                                                    <p className="text-sm font-semibold text-slate-800 mb-4 h-12 line-clamp-2" title={q.question}>
+                                                        {q.question}
+                                                    </p>
 
-                                {/* 2. MARKET ANALYZER (Medium) */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.1 }}
-                                    className="col-span-12 md:col-span-8 bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative"
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${parsedData?.isInternational ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
-                                                    {parsedData?.isInternational ? 'International' : 'Domestic'}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-2xl font-bold text-slate-900 mb-1">
-                                                {parsedData?.isInternational ? 'Visas & International Support' : 'Verified Domestic Applicant'}
-                                            </h3>
-                                            <p className="text-slate-500 max-w-md text-sm leading-relaxed mt-2">
-                                                We've successfully identified your background in <strong className="text-slate-800">{parsedData?.fieldOfStudy}</strong> based in <strong className="text-slate-800">{parsedData?.country}</strong>.
-                                                Your interview preparation will be customized for this region.
-                                            </p>
+                                                    <div className="relative">
+                                                        <textarea
+                                                            className="w-full bg-white text-xs text-slate-600 rounded-xl p-3 border border-slate-200 focus:border-[#3DCEA5] focus:ring-1 focus:ring-[#3DCEA5] focus:outline-none transition-all resize-none custom-scrollbar"
+                                                            rows={4}
+                                                            defaultValue={q.answer}
+                                                        />
+                                                    </div>
+                                                </motion.div>
+                                            ))}
                                         </div>
-                                        <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center">
-                                            <FiGlobe className="w-8 h-8 text-slate-400" />
-                                        </div>
-                                    </div>
-                                </motion.div>
+                                    </motion.div>
+                                )}
 
-                                {/* 3. STRATEGY CONSOLE (Full Width) */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.2 }}
-                                    className="col-span-12 bg-white rounded-3xl border border-slate-100 shadow-sm p-8"
-                                >
-                                    <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                        <FiZap className="text-[#3DCEA5]" /> Recommended Interview Answers
-                                    </h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {questions.map((q, idx) => (
-                                            <motion.div
-                                                key={idx}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.3 + (idx * 0.1) }}
-                                                className="bg-slate-50 rounded-2xl p-5 border border-slate-100 hover:border-[#3DCEA5]/50 transition-colors group"
-                                            >
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <span className="text-xs font-bold text-[#3DCEA5] bg-[#3DCEA5]/10 px-2 py-1 rounded">Q{idx + 1}</span>
-                                                </div>
-                                                <p className="text-sm font-semibold text-slate-800 mb-4 h-12 line-clamp-2" title={q.question}>
-                                                    {q.question}
-                                                </p>
-
-                                                <div className="relative">
-                                                    <textarea
-                                                        className="w-full bg-white text-xs text-slate-600 rounded-xl p-3 border border-slate-200 focus:border-[#3DCEA5] focus:ring-1 focus:ring-[#3DCEA5] focus:outline-none transition-all resize-none custom-scrollbar"
-                                                        rows={4}
-                                                        defaultValue={q.answer}
-                                                    />
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </motion.div>
 
                             </div>
                         </motion.div>
@@ -355,6 +374,6 @@ export default function OnboardingPage() {
                     background: #94a3b8;
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

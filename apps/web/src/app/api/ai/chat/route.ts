@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/auth';
 
 // Gemini API configuration
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 interface ChatRequest {
   message: string;
@@ -129,7 +129,7 @@ async function callGeminiAPI(
 
   // Build conversation context
   const systemPrompt = SYSTEM_PROMPTS[context] || SYSTEM_PROMPTS.onboarding;
-  
+
   let conversationText = '';
   if (conversationHistory && conversationHistory.length > 0) {
     conversationText = conversationHistory
@@ -180,7 +180,7 @@ Please provide a helpful, specific response. If you're suggesting improvements, 
   }
 
   const data = await response.json();
-  
+
   if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
     throw new Error('No response generated');
   }

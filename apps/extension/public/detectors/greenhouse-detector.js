@@ -13,8 +13,8 @@ class GreenhouseDetector extends BaseDetector {
    * @returns {boolean}
    */
   isJobBoard() {
-    return window.location.hostname.includes('greenhouse.io') && 
-           window.location.pathname.includes('/jobs/');
+    return window.location.hostname.includes('greenhouse.io') &&
+      window.location.pathname.includes('/jobs/');
   }
 
   /**
@@ -23,14 +23,17 @@ class GreenhouseDetector extends BaseDetector {
    */
   async extractJobData() {
     try {
-      // Wait for job details to load
-      await this.waitForElement('.app-title', 3000);
+      // Wait for page to load - try multiple selectors
+      await this.waitForElement('h1, h2, .job__title', 3000);
 
-      // Job title
+      // Job title - Greenhouse uses .job__title h1
       const jobTitle = this.getTextWithFallback([
+        '.job__title h1',
+        '.job__title .section-header',
+        'h1.section-header',
         '.app-title',
-        'h1.app-title',
-        '#header .app-title'
+        'h1',  // Generic h1 fallback
+        'h2'
       ]);
 
       // Company name (usually in the header or meta tags)
@@ -40,14 +43,38 @@ class GreenhouseDetector extends BaseDetector {
         '[class*="company"]'
       ]);
 
-      // Fallback: extract from page title or meta tags
+      // Fallback: try meta tags
+      if (!company) {
+        const ogSiteName = document.querySelector('meta[property="og:site_name"]');
+        if (ogSiteName) {
+          company = ogSiteName.content;
+        }
+      }
+
+      // Fallback: extract from page title
       if (!company) {
         const titleParts = document.title.split(' - ');
         company = titleParts[titleParts.length - 1] || '';
       }
 
-      // Location
+      // Fallback: extract from URL subdomain
+      if (!company) {
+        const hostParts = window.location.hostname.split('.');
+        if (hostParts[0] !== 'job-boards' && hostParts[0] !== 'boards') {
+          company = hostParts[0];
+        } else if (hostParts.length > 2) {
+          // For job-boards.greenhouse.io/companyname pattern
+          const pathParts = window.location.pathname.split('/');
+          if (pathParts[1]) {
+            company = pathParts[1];
+          }
+        }
+      }
+
+      // Location - Greenhouse uses .job__location div
       const location = this.getTextWithFallback([
+        '.job__location div',
+        '.job__location',
         '.location',
         '[class*="location"]',
         '.app-info .location'
@@ -130,7 +157,7 @@ class GreenhouseDetector extends BaseDetector {
   isRemote(location, description, workplaceType) {
     const remoteKeywords = ['remote', 'work from home', 'anywhere', 'distributed'];
     const combinedText = `${location} ${description} ${workplaceType}`.toLowerCase();
-    
+
     return remoteKeywords.some(keyword => combinedText.includes(keyword));
   }
 }

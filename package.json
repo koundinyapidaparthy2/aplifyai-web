@@ -29,5 +29,8 @@
   },
   "devDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.10.0"
   }
 }

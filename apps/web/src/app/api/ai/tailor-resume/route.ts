@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 interface TailorResumeRequest {
   jobTitle: string;
@@ -149,7 +149,7 @@ Return ONLY the JSON, no other text.`;
 
   const data = await response.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  
+
   // Parse JSON from response (handle potential markdown code blocks)
   let jsonText = text.trim();
   if (jsonText.startsWith('```json')) {
@@ -161,7 +161,7 @@ Return ONLY the JSON, no other text.`;
   if (jsonText.endsWith('```')) {
     jsonText = jsonText.slice(0, -3);
   }
-  
+
   try {
     const result = JSON.parse(jsonText.trim());
     return result as TailoredResume;

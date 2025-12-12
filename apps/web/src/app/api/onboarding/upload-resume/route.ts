@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
 
 async function parseResumeWithAI(resumeText: string) {
     try {
-        // Use Gemini 1.5 Flash (cheapest model)
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        // Use Gemini 2.5 Flash - latest stable model with API key support
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `
 You are an expert resume parser. Extract the following information from the resume text below and return it as a JSON object.
