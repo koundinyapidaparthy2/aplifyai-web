@@ -9,7 +9,9 @@ const WEB_APP_URL = 'http://localhost:3000'; // TODO: Update for production
 const AUTH_COOKIE_NAME = 'next-auth.session-token'; // NextAuth cookie name
 
 // Resume Generator Service Configuration
-const RESUME_GENERATOR_URL = process.env.NODE_ENV === 'production'
+// Use hostname to determine environment (no process.env in browser extensions)
+const isProduction = typeof window !== 'undefined' && !window.location.hostname.includes('localhost');
+const RESUME_GENERATOR_URL = isProduction
   ? 'https://resume-generator.aplifyai.com'
   : 'http://localhost:8080';
 
