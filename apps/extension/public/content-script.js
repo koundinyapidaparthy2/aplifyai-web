@@ -599,6 +599,67 @@ class AplifyAIContentScript {
         return true;
       }
 
+      // NEW APPLICATION FLOW HANDLERS
+      if (message.action === 'COLLECT_ADDITIONAL_DATA') {
+        // Collect any additional job data not already captured
+        this.collectAdditionalData().then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
+      if (message.action === 'FILL_GENERIC_QUESTIONS') {
+        // Fill generic form fields instantly using cached profile
+        this.fillGenericQuestions(message.data).then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
+      if (message.action === 'ATTACH_FILES') {
+        // Attach resume and cover letter PDFs to file inputs
+        this.attachFiles(message.data).then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
+      if (message.action === 'FILL_AI_QUESTIONS') {
+        // Fill AI questions using generated JSONs
+        this.fillAIQuestions(message.data).then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
+      if (message.action === 'VERIFY_REQUIRED_FIELDS') {
+        // Verify all required fields are filled
+        this.verifyRequiredFields().then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
+      if (message.action === 'SCROLL_TO_SUBMIT') {
+        // Scroll to submit button
+        this.scrollToSubmit().then((result) => {
+          sendResponse(result);
+        }).catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true;
+      }
+
       return false;
     });
   }
@@ -1110,6 +1171,466 @@ class AplifyAIContentScript {
     if (pageText.includes('remote')) return 'Remote';
 
     return 'Not specified';
+  }
+
+  /**
+   * Collect additional job data not already captured
+   * @returns {Promise<Object>}
+   */
+  async collectAdditionalData() {
+    console.log('[AplifyAI] Collecting additional job data');
+
+    try {
+      // Most job data is already collected during detection
+      // This is a placeholder for any additional scraping needed
+      return {
+        success: true,
+        data: {
+          // Could add: salary range, benefits, company size, etc.
+          pageUrl: window.location.href,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    } catch (error) {
+      console.error('[AplifyAI] Error collecting additional data:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fill generic form fields instantly using cached profile
+   * @param {Object} data - { profile, retryOnly }
+   * @returns {Promise<Object>}
+   */
+  async fillGenericQuestions(data) {
+    console.log('[AplifyAI] Filling generic questions', data);
+
+    try {
+      const { profile, retryOnly } = data;
+      const filled = [];
+      const failed = [];
+
+      // Define field mappings (label patterns -> profile fields)
+      const nameFields = {
+        patterns: ['first name', 'first', 'fname', 'given name'],
+        value: profile.firstName || profile.fullName?.split(' ')[0] || '',
+      };
+
+      const lastNameFields = {
+        patterns: ['last name', 'last', 'lname', 'surname', 'family name'],
+        value: profile.lastName || profile.fullName?.split(' ').pop() || '',
+      };
+
+      const emailFields = {
+        patterns: ['email', 'e-mail', 'email address'],
+        value: profile.email || '',
+      };
+
+      const phoneFields = {
+        patterns: ['phone', 'telephone', 'mobile', 'cell'],
+        value: profile.phone || '',
+      };
+
+      const locationFields = {
+        patterns: ['city', 'location', 'address'],
+        value: profile.location || '',
+      };
+
+      const linkedinFields = {
+        patterns: ['linkedin', 'linkedin url', 'linkedin profile'],
+        value: profile.links?.linkedin || '',
+      };
+
+      const githubFields = {
+        patterns: ['github', 'github url', 'github profile'],
+        value: profile.links?.github || '',
+      };
+
+      const portfolioFields = {
+        patterns: ['portfolio', 'website', 'personal website'],
+        value: profile.links?.portfolio || '',
+      };
+
+      const fieldMappings = [
+        nameFields,
+        lastNameFields,
+        emailFields,
+        phoneFields,
+        locationFields,
+        linkedinFields,
+        githubFields,
+        portfolioFields,
+      ];
+
+      // Find and fill all form inputs
+      const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"]');
+
+      for (const input of inputs) {
+        try {
+          // Skip if in retry mode and not in retry list
+          if (retryOnly && !retryOnly.includes(input.id || input.name)) {
+            continue;
+          }
+
+          // Get field label/placeholder
+          const label = this.getFieldLabel(input).toLowerCase();
+
+          // Try to match with field mappings
+          for (const mapping of fieldMappings) {
+            if (mapping.patterns.some(pattern => label.includes(pattern)) && mapping.value) {
+              // Fill the field
+              input.value = mapping.value;
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+              input.dispatchEvent(new Event('change', { bubbles: true }));
+
+              filled.push({
+                id: input.id || input.name,
+                label,
+                value: mapping.value,
+              });
+              break;
+            }
+          }
+        } catch (error) {
+          console.error('[AplifyAI] Error filling field:', error);
+          failed.push({
+            id: input.id || input.name,
+            label: this.getFieldLabel(input),
+            error: error.message,
+          });
+        }
+      }
+
+      console.log(`[AplifyAI] Generic fields filled: ${filled.length}, failed: ${failed.length}`);
+
+      return {
+        success: true,
+        filled,
+        failed,
+      };
+
+    } catch (error) {
+      console.error('[AplifyAI] Error filling generic questions:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get label text for an input field
+   * @param {HTMLElement} input
+   * @returns {string}
+   */
+  getFieldLabel(input) {
+    // Try label element
+    if (input.id) {
+      const label = document.querySelector(`label[for="${input.id}"]`);
+      if (label) return label.textContent.trim();
+    }
+
+    // Try parent label
+    const parentLabel = input.closest('label');
+    if (parentLabel) return parentLabel.textContent.trim();
+
+    // Try aria-label
+    if (input.getAttribute('aria-label')) {
+      return input.getAttribute('aria-label').trim();
+    }
+
+    // Try placeholder
+    if (input.placeholder) {
+      return input.placeholder.trim();
+    }
+
+    // Try name attribute
+    if (input.name) {
+      return input.name.replace(/[-_]/g, ' ').trim();
+    }
+
+    return '';
+  }
+
+  /**
+   * Attach resume and cover letter PDFs to file inputs
+   * @param {Object} data - { resumeUrl, coverLetterUrl }
+   * @returns {Promise<Object>}
+   */
+  async attachFiles(data) {
+    console.log('[AplifyAI] Attaching files', data);
+
+    try {
+      const { resumeUrl, coverLetterUrl } = data;
+      const attached = [];
+
+      // Find file inputs
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+
+      for (const input of fileInputs) {
+        try {
+          const label = this.getFieldLabel(input).toLowerCase();
+
+          // Determine which file to attach based on label
+          let fileUrl = null;
+          let fileName = null;
+
+          if (label.includes('resume') || label.includes('cv')) {
+            fileUrl = resumeUrl;
+            fileName = 'resume.pdf';
+          } else if (label.includes('cover letter')) {
+            fileUrl = coverLetterUrl;
+            fileName = 'cover_letter.pdf';
+          }
+
+          if (fileUrl) {
+            // Download the file
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const file = new File([blob], fileName, { type: 'application/pdf' });
+
+            // Create DataTransfer to set files
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+
+            // Trigger change event
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+
+            attached.push({
+              id: input.id || input.name,
+              label: this.getFieldLabel(input),
+              file: fileName,
+            });
+
+            console.log(`[AplifyAI] Attached ${fileName} to ${label}`);
+          }
+        } catch (error) {
+          console.error('[AplifyAI] Error attaching file:', error);
+        }
+      }
+
+      return {
+        success: true,
+        attached,
+      };
+
+    } catch (error) {
+      console.error('[AplifyAI] Error attaching files:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fill AI questions using generated JSONs
+   * @param {Object} data - { resumeJson, coverLetterJson, jobData, retryOnly }
+   * @returns {Promise<Object>}
+   */
+  async fillAIQuestions(data) {
+    console.log('[AplifyAI] Filling AI questions', data);
+
+    try {
+      const { resumeJson, coverLetterJson, jobData, retryOnly } = data;
+      const filled = [];
+      const failed = [];
+
+      // Find all text areas and large text inputs (likely long-form questions)
+      const questionFields = document.querySelectorAll('textarea, input[type="text"][minlength], input[type="text"][maxlength]');
+
+      for (const field of questionFields) {
+        try {
+          // Skip if in retry mode
+          if (retryOnly && !retryOnly.includes(field.id || field.name)) {
+            continue;
+          }
+
+          //Skip if already filled
+          if (field.value && field.value.trim().length > 0) {
+            continue;
+          }
+
+          const label = this.getFieldLabel(field).toLowerCase();
+
+          // Generate answer based on question
+          const answer = await this.generateAnswerFromJSON(label, resumeJson, coverLetterJson, jobData);
+
+          if (answer) {
+            field.value = answer;
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+
+            filled.push({
+              id: field.id || field.name,
+              question: label,
+              answer: answer.substring(0, 100) + '...',
+            });
+          }
+        } catch (error) {
+          console.error('[AplifyAI] Error filling AI question:', error);
+          failed.push({
+            id: field.id || field.name,
+            question: this.getFieldLabel(field),
+            error: error.message,
+          });
+        }
+      }
+
+      console.log(`[AplifyAI] AI questions filled: ${filled.length}, failed: ${failed.length}`);
+
+      return {
+        success: true,
+        filled,
+        failed,
+      };
+
+    } catch (error) {
+      console.error('[AplifyAI] Error filling AI questions:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate answer from JSON data
+   * @param {string} question
+   * @param {Object} resumeJson
+   * @param {Object} coverLetterJson
+   * @param {Object} jobData
+   * @returns {Promise<string>}
+   */
+  async generateAnswerFromJSON(question, resumeJson, coverLetterJson, jobData) {
+    // Simple keyword matching for common questions
+    const lowerQuestion = question.toLowerCase();
+
+    // Why this company/role?
+    if (lowerQuestion.includes('why') && (lowerQuestion.includes('company') || lowerQuestion.includes('role') || lowerQuestion.includes('position'))) {
+      return `I am excited about this opportunity at ${jobData.company} because it aligns perfectly with my professional background and career goals. With my experience in ${resumeJson.experience?.[0]?.title || 'software development'}, I am confident I can contribute meaningfully to your team while continuing to grow my skills.`;
+    }
+
+    // Greatest achievement
+    if (lowerQuestion.includes('achievement') || lowerQuestion.includes('accomplish')) {
+      const topAchievement = resumeJson.experience?.[0]?.achievements?.[0];
+      return topAchievement || `One of my notable achievements was successfully leading a project that improved system efficiency and delivered measurable impact for the organization.`;
+    }
+
+    // Relevant experience
+    if (lowerQuestion.includes('experience') || lowerQuestion.includes('background')) {
+      const exp = resumeJson.experience?.[0];
+      return exp ? `I have ${resumeJson.experience?.length || 'several'} years of experience, most recently as ${exp.title} at ${exp.company}. ${exp.description || exp.achievements?.[0] || ''}` : 'I have relevant experience in this field.';
+    }
+
+    // Skills
+    if (lowerQuestion.includes('skill') || lowerQuestion.includes('technical')) {
+      const skills = resumeJson.skills?.slice(0, 5).join(', ') || 'various technologies';
+      return `My key technical skills include ${skills}. I have hands-on experience applying these in professional settings.`;
+    }
+
+    // Why leave current job
+    if (lowerQuestion.includes('leave') || lowerQuestion.includes('looking for')) {
+      return `I am seeking new opportunities to grow my career and take on new challenges. This role at ${jobData.company} represents an exciting opportunity to leverage my skills in a new context.`;
+    }
+
+    // Default: Generic professional answer
+    return `Based on my background and experience, I believe I would be a great fit for this role. I am passionate about contributing to ${jobData.company}'s mission and look forward to the opportunity to discuss how my skills align with your needs.`;
+  }
+
+  /**
+   * Verify all required fields are filled
+   * @returns {Promise<Object>}
+   */
+  async verifyRequiredFields() {
+    console.log('[AplifyAI] Verifying required fields');
+
+    try {
+      const missingRequired = [];
+      const missingOptional = [];
+
+      // Find all required fields
+      const requiredFields = document.querySelectorAll('input[required], textarea[required], select[required]');
+
+      for (const field of requiredFields) {
+        const isEmpty = !field.value || field.value.trim().length === 0;
+
+        if (isEmpty) {
+          missingRequired.push({
+            id: field.id || field.name,
+            label: this.getFieldLabel(field),
+            type: field.type || field.tagName.toLowerCase(),
+          });
+        }
+      }
+
+      // Find optional but unfilled fields
+      const optionalFields = document.querySelectorAll('input:not([required]), textarea:not([required]), select:not([required])');
+
+      for (const field of optionalFields) {
+        // Skip hidden, disabled, or non-visible fields
+        if (field.type === 'hidden' || field.disabled || field.offsetParent === null) {
+          continue;
+        }
+
+        const isEmpty = !field.value || field.value.trim().length === 0;
+
+        if (isEmpty) {
+          missingOptional.push({
+            id: field.id || field.name,
+            label: this.getFieldLabel(field),
+            type: field.type || field.tagName.toLowerCase(),
+          });
+        }
+      }
+
+      console.log(`[AplifyAI] Missing required: ${missingRequired.length}, missing optional: ${missingOptional.length}`);
+
+      return {
+        success: true,
+        data: {
+          missingRequired,
+          missingOptional,
+        },
+      };
+
+    } catch (error) {
+      console.error('[AplifyAI] Error verifying fields:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Scroll to submit button
+   * @returns {Promise<Object>}
+   */
+  async scrollToSubmit() {
+    console.log('[AplifyAI] Scrolling to submit button');
+
+    try {
+      // Find submit button
+      const submitButton = document.querySelector('button[type="submit"], input[type="submit"], button:contains("Submit"), button:contains("Apply")');
+
+      if (submitButton) {
+        // Smooth scroll to button
+        submitButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Highlight button (optional visual feedback)
+        submitButton.style.outline = '3px solid #3DCEA5';
+        submitButton.style.outlineOffset = '2px';
+
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+          submitButton.style.outline = '';
+          submitButton.style.outlineOffset = '';
+        }, 3000);
+
+        console.log('[AplifyAI] Scrolled to submit button');
+
+        return {
+          success: true,
+          buttonText: submitButton.textContent.trim(),
+        };
+      } else {
+        throw new Error('Submit button not found');
+      }
+
+    } catch (error) {
+      console.error('[AplifyAI] Error scrolling to submit:', error);
+      throw error;
+    }
   }
 }
 

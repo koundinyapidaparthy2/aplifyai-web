@@ -8,19 +8,32 @@ const API_BASE_URL = 'http://localhost:4000/api'; // Update with your backend UR
 const WEB_APP_URL = 'http://localhost:3000'; // TODO: Update for production
 const AUTH_COOKIE_NAME = 'next-auth.session-token'; // NextAuth cookie name
 
+// Resume Generator Service Configuration
+const RESUME_GENERATOR_URL = process.env.NODE_ENV === 'production'
+  ? 'https://resume-generator.aplifyai.com'
+  : 'http://localhost:8080';
+
 const API_ENDPOINTS = {
   SAVE_JOB: '/jobs/save',
   GENERATE_RESUME: '/resumes/generate',
   GET_USER: '/auth/user',
+  // Resume Generator Service endpoints
+  RG_GENERATE: '/generate',
+  RG_COVER_LETTER: '/cover-letter',
 };
 
 // Storage keys
 const STORAGE_KEYS = {
   AUTH_TOKEN: 'authToken',
   USER_DATA: 'userData',
+  USER_PROFILE_CACHE: 'userProfileCache',
+  PROFILE_CACHE_TIMESTAMP: 'profileCacheTimestamp',
   DETECTED_JOBS: 'detectedJobs',
   SETTINGS: 'settings',
 };
+
+// Profile cache expiry (24 hours in milliseconds)
+const PROFILE_CACHE_EXPIRY = 24 * 60 * 60 * 1000;
 
 // Initialize
 console.log('[AplifyAI] Background script initialized');
@@ -82,11 +95,67 @@ async function syncAuthTokenFromCookies() {
     if (cookie) {
       await chrome.storage.local.set({ [STORAGE_KEYS.AUTH_TOKEN]: cookie.value });
       console.log('[AplifyAI Background] Auth token synced from cookies');
+
+      // Fetch and cache user profile when token is synced
+      await fetchAndCacheUserProfile();
     } else {
       console.log('[AplifyAI Background] No auth cookie found');
     }
   } catch (error) {
     console.error('[AplifyAI Background] Error syncing auth token:', error);
+  }
+}
+
+/**
+ * Fetch user profile and cache it
+ */
+async function fetchAndCacheUserProfile() {
+  try {
+    console.log('[AplifyAI Background] Fetching user profile...');
+    const result = await handleGetUserProfile();
+
+    if (result.success && result.data) {
+      // Cache profile with timestamp
+      await chrome.storage.local.set({
+        [STORAGE_KEYS.USER_PROFILE_CACHE]: result.data,
+        [STORAGE_KEYS.PROFILE_CACHE_TIMESTAMP]: Date.now(),
+      });
+      console.log('[AplifyAI Background] User profile cached successfully');
+    }
+  } catch (error) {
+    console.error('[AplifyAI Background] Error fetching/caching profile:', error);
+  }
+}
+
+/**
+ * Get cached user profile (with expiry check)
+ * @returns {Promise<Object|null>}
+ */
+async function getCachedUserProfile() {
+  try {
+    const result = await chrome.storage.local.get([
+      STORAGE_KEYS.USER_PROFILE_CACHE,
+      STORAGE_KEYS.PROFILE_CACHE_TIMESTAMP,
+    ]);
+
+    const profile = result[STORAGE_KEYS.USER_PROFILE_CACHE];
+    const timestamp = result[STORAGE_KEYS.PROFILE_CACHE_TIMESTAMP];
+
+    // Check if cache exists and is not expired
+    if (profile && timestamp) {
+      const age = Date.now() - timestamp;
+      if (age < PROFILE_CACHE_EXPIRY) {
+        console.log('[AplifyAI Background] Returning cached profile (age:', Math.round(age / 1000 / 60), 'minutes)');
+        return profile;
+      } else {
+        console.log('[AplifyAI Background] Cached profile expired');
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('[AplifyAI Background] Error getting cached profile:', error);
+    return null;
   }
 }
 
@@ -150,6 +219,46 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     case 'GET_USER_PROFILE':
       handleGetUserProfile()
+        .then((result) => sendResponse(result))
+        .catch((error) => sendResponse({ success: false, error: error.message }));
+      return true;
+
+    case 'GET_CACHED_USER_PROFILE':
+      getCachedUserProfile()
+        .then((profile) => {
+          if (profile) {
+            sendResponse({ success: true, data: profile, cached: true });
+          } else {
+            // If no cache, fetch from backend
+            handleGetUserProfile()
+              .then((result) => sendResponse({ ...result, cached: false }))
+              .catch((error) => sendResponse({ success: false, error: error.message }));
+          }
+        })
+        .catch((error) => sendResponse({ success: false, error: error.message }));
+      return true;
+
+    case 'REFRESH_USER_PROFILE':
+      fetchAndCacheUserProfile()
+        .then(() => getCachedUserProfile())
+        .then((profile) => sendResponse({ success: true, data: profile }))
+        .catch((error) => sendResponse({ success: false, error: error.message }));
+      return true;
+
+    case 'GENERATE_TAILORED_RESUME':
+      handleGenerateTailoredResume(message.data)
+        .then((result) => sendResponse(result))
+        .catch((error) => sendResponse({ success: false, error: error.message }));
+      return true;
+
+    case 'GENERATE_COVER_LETTER':
+      handleGenerateCoverLetterFromRG(message.data)
+        .then((result) => sendResponse(result))
+        .catch((error) => sendResponse({ success: false, error: error.message }));
+      return true;
+
+    case 'DOWNLOAD_PDF_TO_FILE':
+      handleDownloadPdfToFile(message.data)
         .then((result) => sendResponse(result))
         .catch((error) => sendResponse({ success: false, error: error.message }));
       return true;
@@ -601,6 +710,183 @@ async function handleTrackApplication(data) {
 
   } catch (error) {
     console.error('[AplifyAI Background] Error tracking application:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate tailored resume using resume-generator service
+ * @param {Object} data - { jobData, userProfile }
+ * @returns {Promise<Object>}
+ */
+async function handleGenerateTailoredResume(data) {
+  console.log('[AplifyAI Background] Generating tailored resume via resume-generator service');
+
+  try {
+    const authToken = await getAuthToken();
+
+    if (!authToken) {
+      throw new Error('Not authenticated. Please log in.');
+    }
+
+    const { jobData, userProfile } = data;
+
+    // Prepare request body for resume-generator service
+    const requestBody = {
+      companyName: jobData.company,
+      jobTitle: jobData.jobTitle || jobData.title,
+      jobDescription: jobData.description,
+      userData: {
+        name: userProfile.fullName || `${userProfile.firstName} ${userProfile.lastName}`,
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        phone: userProfile.phone,
+        location: userProfile.location,
+        linkedin: userProfile.links?.linkedin,
+        github: userProfile.links?.github,
+        portfolio: userProfile.links?.portfolio,
+        experience: userProfile.experience,
+        education: userProfile.education,
+        skills: userProfile.skills,
+        summary: userProfile.summary,
+      },
+      templateId: 'template-001', // Default template
+    };
+
+    const response = await fetch(`${RESUME_GENERATOR_URL}${API_ENDPOINTS.RG_GENERATE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Resume generator error: ${error.error || response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    console.log('[AplifyAI Background] Resume generated successfully:', result);
+
+    // The resume-generator service returns:
+    // { success: true, pdfUrl: "...", coverLetterUrl: "..." (optional), timestamp: "..." }
+    // We need to extract the jsonResponse from userData that was used
+
+    return {
+      success: true,
+      pdfUrl: result.pdfUrl,
+      jsonResponse: requestBody.userData, // Store the JSON for AI questions
+      timestamp: result.timestamp,
+    };
+
+  } catch (error) {
+    console.error('[AplifyAI Background] Error generating resume:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate cover letter using resume-generator service
+ * @param {Object} data - { jobData, userProfile, resumeJson }
+ * @returns {Promise<Object>}
+ */
+async function handleGenerateCoverLetterFromRG(data) {
+  console.log('[ AplifyAI Background] Generating cover letter via resume-generator service');
+
+  try {
+    const authToken = await getAuthToken();
+
+    if (!authToken) {
+      throw new Error('Not authenticated. Please log in.');
+    }
+
+    const { jobData, userProfile, resumeJson } = data;
+
+    const requestBody = {
+      id: `cl-${Date.now()}`,
+      jsonResponse: resumeJson || userProfile, // Use resume JSON if available
+      companyName: jobData.company,
+      jobTitle: jobData.jobTitle || jobData.title,
+      jobDescription: jobData.description,
+      preferences: {
+        tone: 'professional',
+        length: 'medium',
+        focusAreas: 'experience, skills',
+      },
+    };
+
+    const response = await fetch(`${RESUME_GENERATOR_URL}${API_ENDPOINTS.RG_COVER_LETTER}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Cover letter generator error: ${error.error || response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    console.log('[AplifyAI Background] Cover letter generated successfully:', result);
+
+    return {
+      success: true,
+      pdfUrl: result.coverLetterUrl,
+      jsonResponse: requestBody.jsonResponse, // Store JSON for AI questions
+      timestamp: result.timestamp,
+    };
+
+  } catch (error) {
+    console.error('[AplifyAI Background] Error generating cover letter:', error);
+    throw error;
+  }
+}
+
+/**
+ * Download PDF from URL and convert to File object
+ * @param {Object} data - { url, fileName }
+ * @returns {Promise<Object>}
+ */
+async function handleDownloadPdfToFile(data) {
+  console.log('[AplifyAI Background] Downloading PDF:', data.url);
+
+  try {
+    const { url, fileName } = data;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to download PDF: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+
+    // Create File object
+    const file = new File([blob], fileName || 'document.pdf', { type: 'application/pdf' });
+
+    // Note: We can't directly pass File objects through message passing
+    // Instead, we'll return a blob URL that can be used by content script
+    const blobUrl = URL.createObjectURL(blob);
+
+    console.log('[AplifyAI Background] PDF downloaded successfully');
+
+    return {
+      success: true,
+      blobUrl,
+      fileName: file.name,
+      size: file.size,
+    };
+
+  } catch (error) {
+    console.error('[AplifyAI Background] Error downloading PDF:', error);
     throw error;
   }
 }
