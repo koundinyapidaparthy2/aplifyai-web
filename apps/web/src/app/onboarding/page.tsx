@@ -312,6 +312,7 @@ export default function OnboardingPage() {
                                 </div>
                             </div>
 
+                            <div>
                                 {questions && questions.length > 0 && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
@@ -351,8 +352,6 @@ export default function OnboardingPage() {
                                         </div>
                                     </motion.div>
                                 )}
-
-
                             </div>
                         </motion.div>
                     )}
