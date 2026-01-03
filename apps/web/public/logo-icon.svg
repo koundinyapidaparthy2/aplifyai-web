@@ -1,0 +1,29 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="24" cy="24" r="22" fill="url(#gradient)"/>
+  
+  <!-- Stylized "A" with AI circuit theme -->
+  <path d="M24 10L32 30H29L27 25H21L19 30H16L24 10Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="24" cy="19" r="1.5" fill="white"/>
+  <path d="M21 23H27" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- AI circuit nodes -->
+  <circle cx="18" cy="15" r="1.2" fill="white" opacity="0.8"/>
+  <circle cx="30" cy="15" r="1.2" fill="white" opacity="0.8"/>
+  <circle cx="18" cy="33" r="1.2" fill="white" opacity="0.8"/>
+  <circle cx="30" cy="33" r="1.2" fill="white" opacity="0.8"/>
+  
+  <!-- Connecting lines for AI/circuit effect -->
+  <line x1="18" y1="15" x2="21" y2="20" stroke="white" stroke-width="0.8" opacity="0.6"/>
+  <line x1="30" y1="15" x2="27" y2="20" stroke="white" stroke-width="0.8" opacity="0.6"/>
+  <line x1="18" y1="33" x2="21" y2="28" stroke="white" stroke-width="0.8" opacity="0.6"/>
+  <line x1="30" y1="33" x2="27" y2="28" stroke="white" stroke-width="0.8" opacity="0.6"/>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="2" y1="2" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3DCEA5"/>
+      <stop offset="100%" stop-color="#2aa889"/>
+    </linearGradient>
+  </defs>
+</svg>

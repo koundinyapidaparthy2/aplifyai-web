@@ -1,0 +1,35 @@
+<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon -->
+  <g id="icon">
+    <!-- Background circle -->
+    <circle cx="24" cy="24" r="22" fill="url(#gradient)"/>
+    
+    <!-- Stylized "A" with AI circuit theme -->
+    <path d="M24 10L32 30H29L27 25H21L19 30H16L24 10Z" fill="white" stroke="white" stroke-width="1" stroke-linejoin="round"/>
+    <circle cx="24" cy="19" r="1.5" fill="white"/>
+    <path d="M21 23H27" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- AI circuit nodes -->
+    <circle cx="18" cy="15" r="1" fill="white" opacity="0.7"/>
+    <circle cx="30" cy="15" r="1" fill="white" opacity="0.7"/>
+    <circle cx="18" cy="33" r="1" fill="white" opacity="0.7"/>
+    <circle cx="30" cy="33" r="1" fill="white" opacity="0.7"/>
+    
+    <!-- Connecting lines -->
+    <line x1="18" y1="15" x2="21" y2="20" stroke="white" stroke-width="0.5" opacity="0.5"/>
+    <line x1="30" y1="15" x2="27" y2="20" stroke="white" stroke-width="0.5" opacity="0.5"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="54" y="32" font-family="'Inter', 'SF Pro Display', -apple-system, sans-serif" font-size="24" font-weight="700" fill="#1a1a1a">
+    Aplify<tspan fill="#3DCEA5">AI</tspan>
+  </text>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="2" y1="2" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3DCEA5"/>
+      <stop offset="100%" stop-color="#2aa889"/>
+    </linearGradient>
+  </defs>
+</svg>
