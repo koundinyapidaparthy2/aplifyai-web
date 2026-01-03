@@ -17,24 +17,90 @@
 
 ### User Journey
 
-![User Journey Flow](docs/images/user-journey-flow.png)
+```mermaid
+graph LR
+    A[🔐 Sign Up] --> B[📄 Onboarding]
+    B --> C[📊 Dashboard]
+    C --> D[🔍 Browse Jobs]
+    D --> E[🤖 Generate Documents]
+    E --> F[⚡ Auto-Fill Application]
+    F --> G[📈 Track Progress]
+    
+    style A fill:#3DCEA5,stroke:#2aa889,color:#000
+    style E fill:#3DCEA5,stroke:#2aa889,color:#000
+    style F fill:#3DCEA5,stroke:#2aa889,color:#000
+```
 
 ### Application Flow Process
 
 Our intelligent 5-step automation process ensures seamless job applications:
 
-![Application Flow Pyramid](docs/images/application-flow-pyramid.png)
-
-**How it works:**
-1. **Collect Data (0-10%)** - Extracts job details from the application page
-2. **Fill Generic Questions (10-30%)** - Instantly fills basic info using cached profile
-3. **Generate Documents (30-70%)** - Creates tailored resume & cover letter PDFs via AI
-4. **Fill AI Questions (70-90%)** - Intelligently answers complex questions using generated content
-5. **Verify & Submit (90-100%)** - Validates completeness and scrolls to submit button
+```mermaid
+graph TD
+    A["Step 1: Collect Data<br/>(0-10%)<br/>📋 Extract job details from page"] --> B["Step 2: Fill Generic Questions<br/>(10-30%)<br/>⚡ Instant fill using cached profile"]
+    B --> C["Step 3: Generate Documents<br/>(30-70%)<br/>🤖 AI creates resume & cover letter PDFs"]
+    C --> D["Step 4: Fill AI Questions<br/>(70-90%)<br/>🧠 Smart answers using generated content"]
+    D --> E["Step 5: Verify & Submit<br/>(90-100%)<br/>✅ Validate and scroll to submit"]
+    
+    style A fill:#3DCEA5,stroke:#2aa889,color:#000
+    style B fill:#4dd4b5,stroke:#2aa889,color:#000
+    style C fill:#6ddac5,stroke:#2aa889,color:#000
+    style D fill:#8de0d5,stroke:#2aa889,color:#000
+    style E fill:#ade6e5,stroke:#2aa889,color:#000
+```
 
 ### Architecture
 
-![Tech Stack Architecture](docs/images/tech-stack-architecture.png)
+```mermaid
+graph TB
+    subgraph "User Interface Layer"
+        UI1[Next.js 14]
+        UI2[TypeScript]
+        UI3[Tailwind CSS]
+        UI4[Capacitor Mobile]
+        UI5[Electron Desktop]
+    end
+    
+    subgraph "Backend Services Layer"
+        BE1[Next.js API Routes]
+        BE2[Node.js Microservices]
+        BE3[Resume Generator Service]
+    end
+    
+    subgraph "Data & Storage Layer"
+        DB1[Firebase Firestore]
+        DB2[Google Cloud Storage]
+        DB3[Firebase Authentication]
+    end
+    
+    subgraph "AI & Processing Layer"
+        AI1[Google Gemini 1.5 Flash]
+        AI2[LaTeX PDF Generation]
+        AI3[JWT Security]
+    end
+    
+    UI1 --> BE1
+    UI2 --> BE1
+    UI3 --> BE1
+    UI4 --> BE1
+    UI5 --> BE1
+    
+    BE1 --> BE2
+    BE2 --> BE3
+    
+    BE1 --> DB1
+    BE1 --> DB2
+    BE1 --> DB3
+    
+    BE3 --> AI1
+    BE3 --> AI2
+    BE1 --> AI3
+    
+    style UI1 fill:#3DCEA5,stroke:#2aa889,color:#000
+    style BE1 fill:#3DCEA5,stroke:#2aa889,color:#000
+    style DB1 fill:#3DCEA5,stroke:#2aa889,color:#000
+    style AI1 fill:#3DCEA5,stroke:#2aa889,color:#000
+```
 
 ---
 
